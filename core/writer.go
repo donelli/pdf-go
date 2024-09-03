@@ -9,12 +9,18 @@ import (
 const debug = true
 
 type Writer struct {
-	Pdf *fpdf.Fpdf
-	x   float64
-	y   float64
+	Pdf             *fpdf.Fpdf
+	x               float64
+	y               float64
+	footerHeight    float64
+	marginLeft      float64
+	marginRight     float64
+	marginTop       float64
+	marginBottom    float64
+	ignorePageBreak bool
 }
 
-func NewWriter() *Writer {
+func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
 	pdf := fpdf.New("P", "pt", "A4", "")
 	pdf.SetFont("Arial", "", 14)
 	pdf.SetCellMargin(0)
@@ -23,22 +29,31 @@ func NewWriter() *Writer {
 
 	pdf.AddPage()
 
-	return &Writer{
-		Pdf: pdf,
-		x:   4,
-		y:   4,
+	w := &Writer{
+		Pdf:             pdf,
+		x:               leftMargin,
+		y:               topMargin,
+		marginLeft:      leftMargin,
+		marginRight:     rightMargin,
+		marginTop:       topMargin,
+		marginBottom:    bottomMargin,
+		ignorePageBreak: false,
 	}
+
+	pdf.AliasNbPages(w.getNbAlias())
+
+	return w
 }
 
 func (w *Writer) MaxWidth() float64 {
 	pageWidth, _ := w.Pdf.GetPageSize()
-	return pageWidth
+	return pageWidth - w.marginLeft - w.marginRight
 }
 
 func (w *Writer) MaxHeight() float64 {
 	_, pageHeight := w.Pdf.GetPageSize()
 
-	return pageHeight
+	return pageHeight - w.footerHeight - w.marginTop - w.marginBottom
 }
 
 func (w *Writer) NewBuildContext() *RenderContext {
@@ -68,13 +83,26 @@ func (w *Writer) SetY(y float64) {
 		w.BreakPage()
 	}
 }
+
+func (w *Writer) SetYWithoutPageBreakCheck(y float64) {
+	if debug {
+		fmt.Println("[DEBUG] SetYWithoutPageBreakCheck:", y)
+	}
+
+	w.y = y
+}
+
 func (w *Writer) BreakPage() {
+	if w.ignorePageBreak {
+		return
+	}
+
 	if debug {
 		fmt.Println("[DEBUG] BreakPage")
 	}
 
 	w.Pdf.AddPage()
-	w.y = 4
+	w.y = w.marginTop
 }
 
 func (w *Writer) RenderWidget(widget Widget) error {
@@ -86,6 +114,45 @@ func (w *Writer) RenderWidget(widget Widget) error {
 	}
 
 	return nil
+}
+
+func (w *Writer) getNbAlias() string {
+	return "{nb}"
+}
+
+func (w *Writer) SetFooter(
+	handler func(page int, totalPagesAlias string) Widget,
+) {
+	w.computeAndSetFooterHeight(handler)
+
+	w.Pdf.SetFooterFunc(func() {
+		page := w.Pdf.PageNo()
+		w.ignorePageBreak = true
+
+		footerWidget := handler(page, w.getNbAlias())
+		context := w.NewBuildContext()
+
+		w.SetYWithoutPageBreakCheck(w.MaxHeight() + w.marginTop)
+
+		footerWidget.Render(context)
+
+		w.ignorePageBreak = false
+	})
+}
+
+func (w *Writer) computeAndSetFooterHeight(
+	handler func(page int, totalPagesAlias string) Widget,
+) {
+	footerWidget := handler(0, w.getNbAlias())
+	context := w.NewBuildContext()
+
+	_, actualHeight := footerWidget.CalculateSize(context)
+
+	w.footerHeight = actualHeight
+
+	if debug {
+		fmt.Println("[DEBUG] Footer height:", w.footerHeight)
+	}
 }
 
 func (w *Writer) GeneratePdf(fileName string) error {
