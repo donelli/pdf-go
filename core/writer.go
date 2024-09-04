@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"image/color"
+	"strconv"
 
 	"github.com/go-pdf/fpdf"
 )
@@ -176,7 +178,12 @@ func (w *Writer) GetStringSize(text string, fontSize float64, maxWidth float64) 
 	return width, height
 }
 
-func (w *Writer) WriteMultiline(width float64, text string, fontSize float64) {
+func (w *Writer) WriteMultiline(
+	width float64,
+	text string,
+	fontSize float64,
+	color color.RGBA,
+) {
 
 	if debug {
 		fmt.Println("[DEBUG] WriteMultiline: w:", width, "text:", text, "fontSize:", fontSize)
@@ -184,6 +191,7 @@ func (w *Writer) WriteMultiline(width float64, text string, fontSize float64) {
 
 	w.Pdf.SetFontUnitSize(fontSize)
 	w.Pdf.SetXY(w.x, w.y)
+	w.Pdf.SetTextColor(int(color.R), int(color.G), int(color.B))
 	w.Pdf.MultiCell(width, fontSize, text, "", "", false)
 }
 
@@ -205,4 +213,19 @@ func (w *Writer) WillWrite(width, height float64) {
 		w.BreakPage()
 	}
 
+}
+
+func HexToRGBA(hex string) color.RGBA {
+	values, err := strconv.ParseUint(string(hex[1:]), 16, 32)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return color.RGBA{
+		R: uint8(values >> 16),
+		G: uint8((values >> 8) & 0xFF),
+		B: uint8(values & 0xFF),
+		A: 255,
+	}
 }
