@@ -175,6 +175,10 @@ func (w *Writer) GetStringSize(text string, fontSize float64, maxWidth float64) 
 		}
 	}
 
+	if debug {
+		fmt.Println("[DEBUG] GetStringSize: text:", text, "fontSize:", fontSize, "width:", width, "height:", height)
+	}
+
 	return width, height
 }
 

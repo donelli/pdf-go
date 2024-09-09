@@ -46,7 +46,6 @@ func Text(configs ...any) *text {
 
 func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return ctx.Writer.GetStringSize(t.value, t.fontSize, ctx.MaxWidth)
-
 }
 
 func (t *text) Render(ctx *core.RenderContext) error {

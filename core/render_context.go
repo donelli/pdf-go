@@ -6,8 +6,8 @@ type RenderContext struct {
 	MaxHeight float64
 }
 
-func (b *RenderContext) Copy() RenderContext {
-	return RenderContext{
+func (b *RenderContext) Copy() *RenderContext {
+	return &RenderContext{
 		Writer:    b.Writer,
 		MaxWidth:  b.MaxWidth,
 		MaxHeight: b.MaxHeight,
