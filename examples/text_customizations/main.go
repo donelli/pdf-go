@@ -13,5 +13,5 @@ func main() {
 	writer := core.NewWriter(8, 8, 8, 8)
 
 	writer.RenderWidget(content)
-	writer.GeneratePdf("text_customizations.pdf")
+	writer.GeneratePdfToFile("text_customizations.pdf")
 }

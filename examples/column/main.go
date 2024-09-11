@@ -61,5 +61,5 @@ func main() {
 	writer := core.NewWriter(0, 0, 0, 0)
 
 	writer.RenderWidget(content)
-	writer.GeneratePdf("column.pdf")
+	writer.GeneratePdfToFile("column.pdf")
 }

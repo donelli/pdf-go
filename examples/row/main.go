@@ -30,5 +30,5 @@ func main() {
 	)
 
 	writer.RenderWidget(content)
-	writer.GeneratePdf("row.pdf")
+	writer.GeneratePdfToFile("row.pdf")
 }

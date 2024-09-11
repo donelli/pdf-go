@@ -1,6 +1,8 @@
 package core
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"image/color"
 	"strconv"
@@ -157,8 +159,21 @@ func (w *Writer) computeAndSetFooterHeight(
 	}
 }
 
-func (w *Writer) GeneratePdf(fileName string) error {
+func (w *Writer) GeneratePdfToFile(fileName string) error {
 	return w.Pdf.OutputFileAndClose(fileName)
+}
+
+func (w *Writer) GeneratePdfToBuffer(fileName string) (*bytes.Buffer, error) {
+	var buffer bytes.Buffer
+	bufferWriter := bufio.NewWriter(&buffer)
+
+	err := w.Pdf.Output(bufferWriter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &buffer, nil
 }
 
 func (w *Writer) GetStringSize(text string, fontSize float64, maxWidth float64) (float64, float64) {
