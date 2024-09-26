@@ -1,11 +1,16 @@
 package tpdf
 
-import "tpdf/internal/core"
+import (
+	"image/color"
+	"tpdf/internal/core"
+)
 
 type Generator struct {
 	writer                                           *core.Writer
 	topMargin, rightMargin, bottomMargin, leftMargin float64
 	mainWidget                                       core.Widget
+	defaultFontSize                                  *float64
+	defaultFontColor                                 *color.RGBA
 }
 
 func NewGenerator() *Generator {
@@ -28,8 +33,26 @@ func (g *Generator) SetMainWidget(widget core.Widget) {
 	g.mainWidget = widget
 }
 
+func (g *Generator) SetDefaultFontSize(size float64) {
+	g.defaultFontSize = &size
+}
+
+func (g *Generator) SetDefaultFontColor(color color.RGBA) {
+	g.defaultFontColor = &color
+}
+
 func (g *Generator) GenerateToFile(filename string) error {
 	g.writer = core.NewWriter(g.topMargin, g.rightMargin, g.bottomMargin, g.leftMargin)
+
+	if g.defaultFontSize != nil {
+		g.writer.SetDefaultFontSize(*g.defaultFontSize)
+	}
+
+	if g.defaultFontColor != nil {
+		g.writer.SetDefaultFontColor(*g.defaultFontColor)
+	}
+
 	g.writer.RenderWidget(g.mainWidget)
+
 	return g.writer.GeneratePdfToFile(filename)
 }

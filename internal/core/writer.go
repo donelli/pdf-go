@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"image/color"
-	"strconv"
 
 	"github.com/go-pdf/fpdf"
 )
@@ -13,15 +12,17 @@ import (
 const debug = true
 
 type Writer struct {
-	Pdf             *fpdf.Fpdf
-	x               float64
-	y               float64
-	footerHeight    float64
-	marginLeft      float64
-	marginRight     float64
-	marginTop       float64
-	marginBottom    float64
-	ignorePageBreak bool
+	Pdf              *fpdf.Fpdf
+	x                float64
+	y                float64
+	footerHeight     float64
+	marginLeft       float64
+	marginRight      float64
+	marginTop        float64
+	marginBottom     float64
+	ignorePageBreak  bool
+	defaultFontSize  float64
+	defaultFontColor color.RGBA
 }
 
 func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
@@ -34,14 +35,16 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 	pdf.AddPage()
 
 	w := &Writer{
-		Pdf:             pdf,
-		x:               leftMargin,
-		y:               topMargin,
-		marginLeft:      leftMargin,
-		marginRight:     rightMargin,
-		marginTop:       topMargin,
-		marginBottom:    bottomMargin,
-		ignorePageBreak: false,
+		Pdf:              pdf,
+		x:                leftMargin,
+		y:                topMargin,
+		marginLeft:       leftMargin,
+		marginRight:      rightMargin,
+		marginTop:        topMargin,
+		marginBottom:     bottomMargin,
+		ignorePageBreak:  false,
+		defaultFontSize:  14,
+		defaultFontColor: color.RGBA{0, 0, 0, 255},
 	}
 
 	pdf.AliasNbPages(w.getNbAlias())
@@ -75,13 +78,9 @@ func (w *Writer) NewBuildContext() *RenderContext {
 	}
 
 	return &RenderContext{
-		Writer:       w,
-		MaxWidth:     maxWidth,
-		MaxHeight:    maxHeight,
-		MarginLeft:   w.marginLeft,
-		MarginRight:  w.marginRight,
-		MarginTop:    w.marginTop,
-		MarginBottom: w.marginBottom,
+		Writer:    w,
+		MaxWidth:  maxWidth,
+		MaxHeight: maxHeight,
 	}
 }
 
@@ -251,17 +250,18 @@ func (w *Writer) WillWrite(width, height float64) {
 
 }
 
-func HexToRGBA(hex string) color.RGBA {
-	values, err := strconv.ParseUint(string(hex[1:]), 16, 32)
+func (w *Writer) SetDefaultFontSize(fontSize float64) {
+	w.defaultFontSize = fontSize
+}
 
-	if err != nil {
-		panic(err)
-	}
+func (w *Writer) DefaultFontSize() float64 {
+	return w.defaultFontSize
+}
 
-	return color.RGBA{
-		R: uint8(values >> 16),
-		G: uint8((values >> 8) & 0xFF),
-		B: uint8(values & 0xFF),
-		A: 255,
-	}
+func (w *Writer) SetDefaultFontColor(color color.RGBA) {
+	w.defaultFontColor = color
+}
+
+func (w *Writer) DefaultFontColor() color.RGBA {
+	return w.defaultFontColor
 }
