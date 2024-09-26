@@ -9,6 +9,7 @@ func main() {
 		tpdf.Text("Red with font size 20").WithColor(tpdf.HexToRGBA("#ff0000")).WithFontSize(20),
 		tpdf.Text("Bold text").InBold(),
 		tpdf.Text("In italic").InItalic(),
+		tpdf.Text("Underlined").Underlined(),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

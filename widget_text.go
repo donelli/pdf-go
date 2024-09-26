@@ -6,20 +6,22 @@ import (
 )
 
 type text struct {
-	value    string
-	fontSize *float64
-	color    *color.Color
-	bold     bool
-	italic   bool
+	value     string
+	fontSize  *float64
+	color     *color.Color
+	bold      bool
+	italic    bool
+	underline bool
 }
 
 func Text(value string) *text {
 	return &text{
-		value:    value,
-		fontSize: nil,
-		color:    nil,
-		bold:     false,
-		italic:   false,
+		value:     value,
+		fontSize:  nil,
+		color:     nil,
+		bold:      false,
+		italic:    false,
+		underline: false,
 	}
 }
 
@@ -40,6 +42,11 @@ func (t *text) InBold() *text {
 
 func (t *text) InItalic() *text {
 	t.italic = true
+	return t
+}
+
+func (t *text) Underlined() *text {
+	t.underline = true
 	return t
 }
 
@@ -67,6 +74,7 @@ func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 		t.calculatedFontColor(ctx),
 		t.bold,
 		t.italic,
+		t.underline,
 	)
 }
 
@@ -79,6 +87,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.calculatedFontColor(ctx),
 		t.bold,
 		t.italic,
+		t.underline,
 	)
 	return nil
 }

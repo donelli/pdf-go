@@ -199,6 +199,7 @@ func (w *Writer) GetStringSize(
 	color color.Color,
 	bold bool,
 	italic bool,
+	underline bool,
 ) (float64, float64) {
 	w.Pdf.SetFontUnitSize(fontSize)
 	lines := w.Pdf.SplitText(text, maxWidth)
@@ -206,7 +207,7 @@ func (w *Writer) GetStringSize(
 	height := fontSize * float64(len(lines))
 	width := 0.0
 
-	w.setFontStyles(fontSize, color, bold, italic)
+	w.setFontStyles(fontSize, color, bold, italic, underline)
 
 	for _, line := range lines {
 		lineWidth := w.Pdf.GetStringWidth(line)
@@ -229,6 +230,7 @@ func (w *Writer) WriteMultiline(
 	color color.Color,
 	bold bool,
 	italic bool,
+	underline bool,
 ) {
 
 	if debug {
@@ -237,7 +239,7 @@ func (w *Writer) WriteMultiline(
 
 	w.Pdf.SetXY(w.x, w.y)
 
-	w.setFontStyles(fontSize, color, bold, italic)
+	w.setFontStyles(fontSize, color, bold, italic, underline)
 
 	w.Pdf.MultiCell(width, fontSize, text, "", "", false)
 }
@@ -247,6 +249,7 @@ func (w *Writer) setFontStyles(
 	color color.Color,
 	bold bool,
 	italic bool,
+	underline bool,
 ) {
 	w.Pdf.SetFontUnitSize(fontSize)
 
@@ -262,6 +265,10 @@ func (w *Writer) setFontStyles(
 
 	if italic {
 		styleString += "I"
+	}
+
+	if underline {
+		styleString += "U"
 	}
 
 	w.Pdf.SetFontStyle(styleString)
