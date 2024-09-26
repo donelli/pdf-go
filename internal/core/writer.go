@@ -22,7 +22,7 @@ type Writer struct {
 	marginBottom     float64
 	ignorePageBreak  bool
 	defaultFontSize  float64
-	defaultFontColor color.RGBA
+	defaultFontColor color.Color
 }
 
 func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
@@ -196,7 +196,7 @@ func (w *Writer) GetStringSize(
 	text string,
 	fontSize float64,
 	maxWidth float64,
-	color color.RGBA,
+	color color.Color,
 	bold bool,
 	italic bool,
 ) (float64, float64) {
@@ -226,7 +226,7 @@ func (w *Writer) WriteMultiline(
 	width float64,
 	text string,
 	fontSize float64,
-	color color.RGBA,
+	color color.Color,
 	bold bool,
 	italic bool,
 ) {
@@ -244,13 +244,15 @@ func (w *Writer) WriteMultiline(
 
 func (w *Writer) setFontStyles(
 	fontSize float64,
-	color color.RGBA,
+	color color.Color,
 	bold bool,
 	italic bool,
 ) {
 	w.Pdf.SetFontUnitSize(fontSize)
 
-	w.Pdf.SetTextColor(int(color.R), int(color.G), int(color.B))
+	r, g, b, _ := color.RGBA()
+
+	w.Pdf.SetTextColor(int(r), int(g), int(b))
 
 	styleString := ""
 
@@ -293,10 +295,10 @@ func (w *Writer) DefaultFontSize() float64 {
 	return w.defaultFontSize
 }
 
-func (w *Writer) SetDefaultFontColor(color color.RGBA) {
+func (w *Writer) SetDefaultFontColor(color color.Color) {
 	w.defaultFontColor = color
 }
 
-func (w *Writer) DefaultFontColor() color.RGBA {
+func (w *Writer) DefaultFontColor() color.Color {
 	return w.defaultFontColor
 }

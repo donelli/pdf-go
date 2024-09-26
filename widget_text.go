@@ -8,7 +8,7 @@ import (
 type text struct {
 	value    string
 	fontSize *float64
-	color    *color.RGBA
+	color    *color.Color
 	bold     bool
 	italic   bool
 }
@@ -28,7 +28,7 @@ func (t *text) WithFontSize(fontSize float64) *text {
 	return t
 }
 
-func (t *text) WithColor(color color.RGBA) *text {
+func (t *text) WithColor(color color.Color) *text {
 	t.color = &color
 	return t
 }
@@ -51,7 +51,7 @@ func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
 	return ctx.DefaultFontSize()
 }
 
-func (t *text) calculatedFontColor(ctx *core.RenderContext) color.RGBA {
+func (t *text) calculatedFontColor(ctx *core.RenderContext) color.Color {
 	if t.color != nil {
 		return *t.color
 	}

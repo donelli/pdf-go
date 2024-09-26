@@ -28,6 +28,6 @@ func (b *RenderContext) DefaultFontSize() float64 {
 	return b.Writer.defaultFontSize
 }
 
-func (b *RenderContext) DefaultFontColor() color.RGBA {
+func (b *RenderContext) DefaultFontColor() color.Color {
 	return b.Writer.defaultFontColor
 }

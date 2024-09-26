@@ -10,7 +10,7 @@ type Generator struct {
 	topMargin, rightMargin, bottomMargin, leftMargin float64
 	mainWidget                                       core.Widget
 	defaultFontSize                                  *float64
-	defaultFontColor                                 *color.RGBA
+	defaultFontColor                                 *color.Color
 }
 
 func NewGenerator() *Generator {
@@ -37,7 +37,7 @@ func (g *Generator) SetDefaultFontSize(size float64) {
 	g.defaultFontSize = &size
 }
 
-func (g *Generator) SetDefaultFontColor(color color.RGBA) {
+func (g *Generator) SetDefaultFontColor(color color.Color) {
 	g.defaultFontColor = &color
 }
 
