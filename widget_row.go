@@ -5,36 +5,24 @@ import (
 	"tpdf/internal/core"
 )
 
-type MainAxisSize int8
-
-const (
-	MainAxisSizeMin MainAxisSize = iota
-	MainAxisSizeMax
-)
-
-type RowConfig struct {
-	MainAxisSize MainAxisSize
-}
-
 type row struct {
-	children []core.Widget
-	config   RowConfig
+	children     []core.Widget
+	mainAxisSize MainAxisSize
 }
 
 func Row(
-	config RowConfig,
 	children ...core.Widget,
 ) *row {
 	return &row{
-		children: children,
-		config:   config,
+		children:     children,
+		mainAxisSize: MainAxisSizeMax,
 	}
 }
 
 func (r *row) getWidthPerChild(ctx *core.RenderContext) []float64 {
 	widthPerChild := make([]float64, len(r.children))
 
-	if r.config.MainAxisSize == MainAxisSizeMax {
+	if r.mainAxisSize == MainAxisSizeMax {
 		for i := range r.children {
 			widthPerChild[i] = ctx.MaxWidth / float64(len(r.children))
 		}
@@ -119,7 +107,7 @@ func (r *row) Render(ctx *core.RenderContext) error {
 
 		fmt.Println("current x: " + fmt.Sprint(x))
 
-		if r.config.MainAxisSize == MainAxisSizeMin {
+		if r.mainAxisSize == MainAxisSizeMin {
 
 			maxX := ctx.MaxWidth + ctx.HorizontalMargin()
 			nextX := x + childWidth
@@ -140,4 +128,9 @@ func (r *row) Render(ctx *core.RenderContext) error {
 	}
 
 	return nil
+}
+
+func (r *row) WithMainAxisSize(mainAxisSize MainAxisSize) *row {
+	r.mainAxisSize = mainAxisSize
+	return r
 }

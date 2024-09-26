@@ -10,3 +10,10 @@ const (
 	MainAxisAlignmentSpaceAround
 	MainAxisAlignmentSpaceEvenly
 )
+
+type MainAxisSize int8
+
+const (
+	MainAxisSizeMin MainAxisSize = iota
+	MainAxisSizeMax
+)
