@@ -12,6 +12,7 @@ type text struct {
 	bold      bool
 	italic    bool
 	underline bool
+	strikeOut bool
 }
 
 func Text(value string) *text {
@@ -22,6 +23,7 @@ func Text(value string) *text {
 		bold:      false,
 		italic:    false,
 		underline: false,
+		strikeOut: false,
 	}
 }
 
@@ -50,6 +52,11 @@ func (t *text) Underlined() *text {
 	return t
 }
 
+func (t *text) StrikeOut() *text {
+	t.strikeOut = true
+	return t
+}
+
 func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
 	if t.fontSize != nil {
 		return *t.fontSize
@@ -75,6 +82,7 @@ func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 		t.bold,
 		t.italic,
 		t.underline,
+		t.strikeOut,
 	)
 }
 
@@ -88,6 +96,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.bold,
 		t.italic,
 		t.underline,
+		t.strikeOut,
 	)
 	return nil
 }

@@ -10,6 +10,7 @@ func main() {
 		tpdf.Text("Bold text").InBold(),
 		tpdf.Text("In italic").InItalic(),
 		tpdf.Text("Underlined").Underlined(),
+		tpdf.Text("Strike out").StrikeOut(),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()
