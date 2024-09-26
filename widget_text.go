@@ -10,6 +10,7 @@ type text struct {
 	fontSize *float64
 	color    *color.RGBA
 	bold     bool
+	italic   bool
 }
 
 func Text(value string) *text {
@@ -18,6 +19,7 @@ func Text(value string) *text {
 		fontSize: nil,
 		color:    nil,
 		bold:     false,
+		italic:   false,
 	}
 }
 
@@ -33,6 +35,11 @@ func (t *text) WithColor(color color.RGBA) *text {
 
 func (t *text) InBold() *text {
 	t.bold = true
+	return t
+}
+
+func (t *text) InItalic() *text {
+	t.italic = true
 	return t
 }
 
@@ -53,11 +60,25 @@ func (t *text) calculatedFontColor(ctx *core.RenderContext) color.RGBA {
 }
 
 func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
-	return ctx.Writer.GetStringSize(t.value, t.calculatedFontSize(ctx), ctx.MaxWidth, t.calculatedFontColor(ctx), t.bold)
+	return ctx.Writer.GetStringSize(
+		t.value,
+		t.calculatedFontSize(ctx),
+		ctx.MaxWidth,
+		t.calculatedFontColor(ctx),
+		t.bold,
+		t.italic,
+	)
 }
 
 func (t *text) Render(ctx *core.RenderContext) error {
 	width, _ := t.CalculateSize(ctx)
-	ctx.Writer.WriteMultiline(width, t.value, t.calculatedFontSize(ctx), t.calculatedFontColor(ctx), t.bold)
+	ctx.Writer.WriteMultiline(
+		width,
+		t.value,
+		t.calculatedFontSize(ctx),
+		t.calculatedFontColor(ctx),
+		t.bold,
+		t.italic,
+	)
 	return nil
 }

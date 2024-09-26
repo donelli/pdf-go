@@ -192,14 +192,21 @@ func (w *Writer) GeneratePdfToBuffer(fileName string) (*bytes.Buffer, error) {
 	return &buffer, nil
 }
 
-func (w *Writer) GetStringSize(text string, fontSize float64, maxWidth float64, color color.RGBA, bold bool) (float64, float64) {
+func (w *Writer) GetStringSize(
+	text string,
+	fontSize float64,
+	maxWidth float64,
+	color color.RGBA,
+	bold bool,
+	italic bool,
+) (float64, float64) {
 	w.Pdf.SetFontUnitSize(fontSize)
 	lines := w.Pdf.SplitText(text, maxWidth)
 
 	height := fontSize * float64(len(lines))
 	width := 0.0
 
-	w.setFontStyles(fontSize, color, bold)
+	w.setFontStyles(fontSize, color, bold, italic)
 
 	for _, line := range lines {
 		lineWidth := w.Pdf.GetStringWidth(line)
@@ -221,6 +228,7 @@ func (w *Writer) WriteMultiline(
 	fontSize float64,
 	color color.RGBA,
 	bold bool,
+	italic bool,
 ) {
 
 	if debug {
@@ -229,12 +237,17 @@ func (w *Writer) WriteMultiline(
 
 	w.Pdf.SetXY(w.x, w.y)
 
-	w.setFontStyles(fontSize, color, bold)
+	w.setFontStyles(fontSize, color, bold, italic)
 
 	w.Pdf.MultiCell(width, fontSize, text, "", "", false)
 }
 
-func (w *Writer) setFontStyles(fontSize float64, color color.RGBA, bold bool) {
+func (w *Writer) setFontStyles(
+	fontSize float64,
+	color color.RGBA,
+	bold bool,
+	italic bool,
+) {
 	w.Pdf.SetFontUnitSize(fontSize)
 
 	w.Pdf.SetTextColor(int(color.R), int(color.G), int(color.B))
@@ -243,6 +256,10 @@ func (w *Writer) setFontStyles(fontSize float64, color color.RGBA, bold bool) {
 
 	if bold {
 		styleString += "B"
+	}
+
+	if italic {
+		styleString += "I"
 	}
 
 	w.Pdf.SetFontStyle(styleString)
