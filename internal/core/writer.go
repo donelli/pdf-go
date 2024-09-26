@@ -202,13 +202,11 @@ func (w *Writer) GetStringSize(
 	underline bool,
 	strikeOut bool,
 ) (float64, float64) {
-	w.Pdf.SetFontUnitSize(fontSize)
+	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
 	lines := w.Pdf.SplitText(text, maxWidth)
 
 	height := fontSize * float64(len(lines))
 	width := 0.0
-
-	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
 
 	for _, line := range lines {
 		lineWidth := w.Pdf.GetStringWidth(line)
