@@ -233,17 +233,33 @@ func (w *Writer) WriteMultiline(
 	italic bool,
 	underline bool,
 	strikeOut bool,
+	textAlign TextAlign,
 ) {
-
-	if debug {
-		fmt.Println("[DEBUG] WriteMultiline: w:", width, "text:", text, "fontSize:", fontSize)
-	}
 
 	w.Pdf.SetXY(w.x, w.y)
 
 	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
 
-	w.Pdf.MultiCell(width, fontSize, text, "", "", false)
+	textAlignStr := w.textAlignToPdfStr(textAlign)
+
+	if debug {
+		fmt.Println("[DEBUG] WriteMultiline: w:", width, "text:", text, "textAlign:", textAlignStr)
+	}
+
+	w.Pdf.MultiCell(width, fontSize, text, "", textAlignStr, false)
+}
+
+func (w *Writer) textAlignToPdfStr(textAlign TextAlign) string {
+	switch textAlign {
+	case TextAlignLeft:
+		return "L"
+	case TextAlignCenter:
+		return "C"
+	case TextAlignRight:
+		return "R"
+	}
+
+	return ""
 }
 
 func (w *Writer) setFontStyles(
@@ -279,6 +295,10 @@ func (w *Writer) setFontStyles(
 	}
 
 	w.Pdf.SetFontStyle(styleString)
+
+	if debug {
+		fmt.Println("[DEBUG] setFontStyles: fontSize:", fontSize, "color:", color, "bold:", bold, "italic:", italic, "underline:", underline, "strikeOut:", strikeOut)
+	}
 }
 
 func (w *Writer) X() float64 {

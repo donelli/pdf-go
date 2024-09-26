@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	tpdf "tpdf"
 )
 
@@ -11,6 +12,9 @@ func main() {
 		tpdf.Text("In italic").InItalic(),
 		tpdf.Text("Underlined").Underlined(),
 		tpdf.Text("Strike out").StrikeOut(),
+		tpdf.Text(strings.Repeat("LeftAlign. ", 15)).Align(tpdf.TextAlignLeft),
+		tpdf.Text(strings.Repeat("RightAlign. ", 15)).Align(tpdf.TextAlignRight),
+		tpdf.Text(strings.Repeat("CenterAlign. ", 15)).Align(tpdf.TextAlignCenter),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

@@ -13,6 +13,7 @@ type text struct {
 	italic    bool
 	underline bool
 	strikeOut bool
+	textAlign TextAlign
 }
 
 func Text(value string) *text {
@@ -24,6 +25,7 @@ func Text(value string) *text {
 		italic:    false,
 		underline: false,
 		strikeOut: false,
+		textAlign: TextAlignAuto,
 	}
 }
 
@@ -54,6 +56,11 @@ func (t *text) Underlined() *text {
 
 func (t *text) StrikeOut() *text {
 	t.strikeOut = true
+	return t
+}
+
+func (t *text) Align(textAlign TextAlign) *text {
+	t.textAlign = textAlign
 	return t
 }
 
@@ -97,6 +104,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.italic,
 		t.underline,
 		t.strikeOut,
+		core.TextAlign(t.textAlign),
 	)
 	return nil
 }
