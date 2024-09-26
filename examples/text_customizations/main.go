@@ -6,7 +6,7 @@ import (
 
 func main() {
 	content := tpdf.Column(
-		tpdf.Text("Hello", tpdf.FontSize(20), tpdf.FontColor("#ff0000")),
+		tpdf.Text("Hello").WithColor(tpdf.HexToRGBA("#ff0000")).WithFontSize(20),
 	)
 
 	generator := tpdf.NewGenerator()
