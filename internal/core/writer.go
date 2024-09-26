@@ -234,6 +234,7 @@ func (w *Writer) WriteMultiline(
 	underline bool,
 	strikeOut bool,
 	textAlign TextAlign,
+	link string,
 ) {
 
 	w.Pdf.SetXY(w.x, w.y)
@@ -247,6 +248,12 @@ func (w *Writer) WriteMultiline(
 	}
 
 	w.Pdf.MultiCell(width, fontSize, text, "", textAlignStr, false)
+
+	endY := w.Pdf.GetY()
+
+	if link != "" {
+		w.Pdf.LinkString(w.x, w.y, width, endY-w.y, link)
+	}
 }
 
 func (w *Writer) textAlignToPdfStr(textAlign TextAlign) string {

@@ -15,6 +15,8 @@ func main() {
 		tpdf.Text(strings.Repeat("LeftAlign. ", 15)).Align(tpdf.TextAlignLeft),
 		tpdf.Text(strings.Repeat("RightAlign. ", 15)).Align(tpdf.TextAlignRight),
 		tpdf.Text(strings.Repeat("CenterAlign. ", 15)).Align(tpdf.TextAlignCenter),
+		tpdf.Text("With link").Link("https://google.com"),
+		tpdf.Text(strings.Repeat("Multi line link. ", 10)).Link("https://google.com"),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

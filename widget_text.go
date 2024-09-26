@@ -14,6 +14,7 @@ type text struct {
 	underline bool
 	strikeOut bool
 	textAlign TextAlign
+	link      string
 }
 
 func Text(value string) *text {
@@ -64,6 +65,11 @@ func (t *text) Align(textAlign TextAlign) *text {
 	return t
 }
 
+func (t *text) Link(link string) *text {
+	t.link = link
+	return t
+}
+
 func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
 	if t.fontSize != nil {
 		return *t.fontSize
@@ -105,6 +111,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.underline,
 		t.strikeOut,
 		core.TextAlign(t.textAlign),
+		t.link,
 	)
 	return nil
 }
