@@ -4,29 +4,13 @@ import "tpdf/internal/core"
 
 type column struct {
 	children []core.Widget
-	config   ColumnConfig
+	spacing  float64
 }
 
-type ColumnConfig struct {
-	Spacing float64
-}
-
-func Column(configs ...any) *column {
-	children := []core.Widget{}
-	columnConfig := ColumnConfig{}
-
-	for _, config := range configs {
-		switch v := config.(type) {
-		case core.Widget:
-			children = append(children, v)
-		case ColumnConfig:
-			columnConfig = v
-		}
-	}
-
+func Column(children ...core.Widget) *column {
 	return &column{
 		children: children,
-		config:   columnConfig,
+		spacing:  0,
 	}
 }
 
@@ -44,7 +28,7 @@ func (t *column) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 		height += childHeight
 	}
 
-	height += float64(len(t.children)-1) * t.config.Spacing
+	height += float64(len(t.children)-1) * t.spacing
 
 	return width, height
 }
@@ -64,8 +48,13 @@ func (t *column) Render(ctx *core.RenderContext) error {
 		}
 
 		ctx.Writer.SetX(x)
-		ctx.Writer.SetY(y + height + t.config.Spacing)
+		ctx.Writer.SetY(y + height + t.spacing)
 	}
 
 	return nil
+}
+
+func (t *column) WithSpacing(spacing float64) *column {
+	t.spacing = spacing
+	return t
 }
