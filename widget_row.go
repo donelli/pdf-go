@@ -1,8 +1,8 @@
-package widgets
+package tpdf
 
 import (
 	"fmt"
-	"pdf_go_test/core"
+	"tpdf/internal/core"
 )
 
 type MainAxisSize int8
@@ -93,21 +93,39 @@ func (r *row) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return width, height
 }
 
+func sum(numbers []float64) float64 {
+	var result float64 = 0
+	for i := 0; i < len(numbers); i++ {
+		result += numbers[i]
+	}
+	return result
+}
+
 func (r *row) Render(ctx *core.RenderContext) error {
 
 	width, height := r.CalculateSize(ctx)
 	ctx.Writer.WillWrite(width, height)
 
-	x := ctx.Writer.X()
-
 	widthPerChild := r.getWidthPerChild(ctx)
+
+	fmt.Println(widthPerChild)
+	fmt.Println("sum" + fmt.Sprint(sum(widthPerChild)))
+	fmt.Println("max" + fmt.Sprint(ctx.MaxWidth))
 
 	for index, child := range r.children {
 		childWidth := widthPerChild[index]
 
+		x := ctx.Writer.X()
+
+		fmt.Println("current x: " + fmt.Sprint(x))
+
 		if r.config.MainAxisSize == MainAxisSizeMin {
-			if x+childWidth > ctx.MaxWidth {
-				panic(fmt.Sprint("overflow by ", x+childWidth-ctx.MaxWidth, " childWidth ", childWidth, " maxWidth ", ctx.MaxWidth))
+
+			maxX := ctx.MaxWidth + ctx.HorizontalMargin()
+			nextX := x + childWidth
+
+			if nextX > maxX {
+				panic(fmt.Sprint("overflow by ", nextX-maxX))
 			}
 		}
 
@@ -118,8 +136,7 @@ func (r *row) Render(ctx *core.RenderContext) error {
 			return err
 		}
 
-		x += childWidth
-		ctx.Writer.SetX(x)
+		ctx.Writer.SetX(x + childWidth)
 	}
 
 	return nil

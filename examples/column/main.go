@@ -1,65 +1,64 @@
 package main
 
 import (
-	"pdf_go_test/core"
-	pdf "pdf_go_test/widgets"
 	"strings"
+	"tpdf"
 )
 
 func main() {
-	content := pdf.Column(
-		pdf.Text(strings.Repeat("Hello ", 20), pdf.FontSize(14)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
-		pdf.Text("Hello", pdf.FontSize(20)),
+	content := tpdf.Column(
+		tpdf.Text(strings.Repeat("Hello ", 20), tpdf.FontSize(14)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
+		tpdf.Text("Hello", tpdf.FontSize(20)),
 	)
 
-	writer := core.NewWriter(0, 0, 0, 0)
+	generator := tpdf.NewGenerator()
 
-	writer.RenderWidget(content)
-	writer.GeneratePdfToFile("column.pdf")
+	generator.SetMainWidget(content)
+	generator.GenerateToFile("column.pdf")
 }

@@ -1,34 +1,31 @@
 package main
 
-import (
-	"pdf_go_test/core"
-	pdf "pdf_go_test/widgets"
-)
+import "tpdf"
 
 func main() {
-	writer := core.NewWriter(0, 0, 0, 0)
+	generator := tpdf.NewGenerator()
 
-	content := pdf.Column(
-		pdf.Row(
-			pdf.RowConfig{
-				MainAxisSize: pdf.MainAxisSizeMin,
+	content := tpdf.Column(
+		tpdf.Row(
+			tpdf.RowConfig{
+				MainAxisSize: tpdf.MainAxisSizeMin,
 			},
-			pdf.Text("Side "),
-			pdf.Text("by "),
-			pdf.Text("Side"),
-			pdf.Expand(
-				pdf.Row(
-					pdf.RowConfig{
-						MainAxisSize: pdf.MainAxisSizeMax,
+			tpdf.Text("Side "),
+			tpdf.Text("by "),
+			tpdf.Text("Side"),
+			tpdf.Expand(
+				tpdf.Row(
+					tpdf.RowConfig{
+						MainAxisSize: tpdf.MainAxisSizeMax,
 					},
-					pdf.Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-					pdf.Text("B"),
+					tpdf.Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+					tpdf.Text("B"),
 				),
 			),
 		),
-		pdf.Text("Bottom Bottom Bottom"),
+		tpdf.Text("Bottom Bottom Bottom"),
 	)
 
-	writer.RenderWidget(content)
-	writer.GeneratePdfToFile("row.pdf")
+	generator.SetMainWidget(content)
+	generator.GenerateToFile("row.pdf")
 }

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"pdf_go_test/core"
-	pdf "pdf_go_test/widgets"
+	tpdf "tpdf"
 )
 
 func main() {
-	content := pdf.Column(
-		pdf.Text("Hello", pdf.FontSize(20), pdf.FontColor("#ff0000")),
+	content := tpdf.Column(
+		tpdf.Text("Hello", tpdf.FontSize(20), tpdf.FontColor("#ff0000")),
 	)
 
-	writer := core.NewWriter(8, 8, 8, 8)
+	generator := tpdf.NewGenerator()
+	generator.SetMargins(8, 8, 8, 8)
+	generator.SetMainWidget(content)
 
-	writer.RenderWidget(content)
-	writer.GeneratePdfToFile("text_customizations.pdf")
+	generator.GenerateToFile("text_customizations.pdf")
 }

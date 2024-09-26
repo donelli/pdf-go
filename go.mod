@@ -1,4 +1,4 @@
-module pdf_go_test
+module tpdf
 
 go 1.22.3
 

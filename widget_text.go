@@ -1,8 +1,8 @@
-package widgets
+package tpdf
 
 import (
 	"image/color"
-	"pdf_go_test/core"
+	"tpdf/internal/core"
 )
 
 type text struct {

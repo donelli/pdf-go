@@ -1,6 +1,6 @@
-package widgets
+package tpdf
 
-import "pdf_go_test/core"
+import "tpdf/internal/core"
 
 type expand struct {
 	child core.Widget

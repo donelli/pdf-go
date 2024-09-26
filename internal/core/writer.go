@@ -46,6 +46,11 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 
 	pdf.AliasNbPages(w.getNbAlias())
 
+	if debug {
+		pageWidth, pageHeight := pdf.GetPageSize()
+		fmt.Println("[DEBUG] Created writer. page width", pageWidth, "page height", pageHeight, "max width", w.MaxWidth(), "max height", w.MaxHeight())
+	}
+
 	return w
 }
 
@@ -61,10 +66,22 @@ func (w *Writer) MaxHeight() float64 {
 }
 
 func (w *Writer) NewBuildContext() *RenderContext {
+
+	maxWidth := w.MaxWidth()
+	maxHeight := w.MaxHeight()
+
+	if debug {
+		fmt.Println("[DEBUG] NewBuildContext: maxWidth:", maxWidth, "maxHeight:", maxHeight)
+	}
+
 	return &RenderContext{
-		Writer:    w,
-		MaxWidth:  w.MaxWidth(),
-		MaxHeight: w.MaxHeight(),
+		Writer:       w,
+		MaxWidth:     maxWidth,
+		MaxHeight:    maxHeight,
+		MarginLeft:   w.marginLeft,
+		MarginRight:  w.marginRight,
+		MarginTop:    w.marginTop,
+		MarginBottom: w.marginBottom,
 	}
 }
 
