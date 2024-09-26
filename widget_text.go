@@ -9,6 +9,7 @@ type text struct {
 	value    string
 	fontSize *float64
 	color    *color.RGBA
+	bold     bool
 }
 
 func Text(value string) *text {
@@ -16,6 +17,7 @@ func Text(value string) *text {
 		value:    value,
 		fontSize: nil,
 		color:    nil,
+		bold:     false,
 	}
 }
 
@@ -26,6 +28,11 @@ func (t *text) WithFontSize(fontSize float64) *text {
 
 func (t *text) WithColor(color color.RGBA) *text {
 	t.color = &color
+	return t
+}
+
+func (t *text) InBold() *text {
+	t.bold = true
 	return t
 }
 
@@ -46,11 +53,11 @@ func (t *text) calculatedFontColor(ctx *core.RenderContext) color.RGBA {
 }
 
 func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
-	return ctx.Writer.GetStringSize(t.value, t.calculatedFontSize(ctx), ctx.MaxWidth)
+	return ctx.Writer.GetStringSize(t.value, t.calculatedFontSize(ctx), ctx.MaxWidth, t.calculatedFontColor(ctx), t.bold)
 }
 
 func (t *text) Render(ctx *core.RenderContext) error {
 	width, _ := t.CalculateSize(ctx)
-	ctx.Writer.WriteMultiline(width, t.value, t.calculatedFontSize(ctx), t.calculatedFontColor(ctx))
+	ctx.Writer.WriteMultiline(width, t.value, t.calculatedFontSize(ctx), t.calculatedFontColor(ctx), t.bold)
 	return nil
 }
