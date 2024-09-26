@@ -245,7 +245,14 @@ func (w *Writer) WriteMultiline(
 		fmt.Println("[DEBUG] WriteMultiline: w:", width, "text:", text, "textAlign:", textAlignStr)
 	}
 
-	w.Pdf.MultiCell(width, fontSize, text, "", textAlignStr, false)
+	lines := w.Pdf.SplitText(text, width)
+
+	x := w.x
+	for _, line := range lines {
+		w.Pdf.SetX(x)
+		w.Pdf.CellFormat(width, fontSize, line, "", 0, textAlignStr, false, 0, "")
+		w.Pdf.Ln(-1)
+	}
 
 	endY := w.Pdf.GetY()
 
