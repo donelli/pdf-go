@@ -15,6 +15,7 @@ type text struct {
 	strikeOut bool
 	textAlign TextAlign
 	link      string
+	maxLines  int
 }
 
 func Text(value string) *text {
@@ -27,6 +28,7 @@ func Text(value string) *text {
 		underline: false,
 		strikeOut: false,
 		textAlign: TextAlignAuto,
+		maxLines:  0,
 	}
 }
 
@@ -70,6 +72,11 @@ func (t *text) Link(link string) *text {
 	return t
 }
 
+func (t *text) MaxLines(maxLines int) *text {
+	t.maxLines = maxLines
+	return t
+}
+
 func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
 	if t.fontSize != nil {
 		return *t.fontSize
@@ -96,13 +103,13 @@ func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 		t.italic,
 		t.underline,
 		t.strikeOut,
+		t.maxLines,
 	)
 }
 
 func (t *text) Render(ctx *core.RenderContext) error {
-	width, _ := t.CalculateSize(ctx)
 	ctx.Writer.WriteMultiline(
-		width,
+		ctx.MaxWidth,
 		t.value,
 		t.calculatedFontSize(ctx),
 		t.calculatedFontColor(ctx),
@@ -112,6 +119,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.strikeOut,
 		core.TextAlign(t.textAlign),
 		t.link,
+		t.maxLines,
 	)
 	return nil
 }

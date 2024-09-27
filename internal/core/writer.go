@@ -201,6 +201,7 @@ func (w *Writer) GetStringSize(
 	italic bool,
 	underline bool,
 	strikeOut bool,
+	maxLines int,
 ) (float64, float64) {
 	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
 	lines := w.Pdf.SplitText(text, maxWidth)
@@ -208,10 +209,22 @@ func (w *Writer) GetStringSize(
 	height := fontSize * float64(len(lines))
 	width := 0.0
 
-	for _, line := range lines {
+	for lineIndex, line := range lines {
 		lineWidth := w.Pdf.GetStringWidth(line)
 		if lineWidth > width {
 			width = lineWidth
+		}
+
+		if maxLines > 0 && lineIndex == maxLines-1 {
+			stringWithEllipsisWidth := w.Pdf.GetStringWidth(line + "...")
+
+			if stringWithEllipsisWidth < maxWidth {
+				width = stringWithEllipsisWidth
+			} else {
+				width = maxWidth
+			}
+
+			break
 		}
 	}
 
@@ -233,6 +246,7 @@ func (w *Writer) WriteMultiline(
 	strikeOut bool,
 	textAlign TextAlign,
 	link string,
+	maxLines int,
 ) {
 
 	w.Pdf.SetXY(w.x, w.y)
@@ -248,10 +262,34 @@ func (w *Writer) WriteMultiline(
 	lines := w.Pdf.SplitText(text, width)
 
 	x := w.x
-	for _, line := range lines {
+	for lineIndex, line := range lines {
+
+		shouldAddEllipsis := maxLines > 0 && lineIndex == maxLines-1 && len(lines) > maxLines
+
+		if shouldAddEllipsis {
+			for i := range 3 {
+				textWithEllipsis := line[0:len(line)-i] + "..."
+
+				textSize := w.Pdf.GetStringWidth(textWithEllipsis)
+
+				if textSize <= width {
+					line = textWithEllipsis
+					break
+				}
+			}
+		}
+
+		if debug {
+			fmt.Println("[DEBUG] CellFormat: text:", line, "width", width)
+		}
+
 		w.Pdf.SetX(x)
 		w.Pdf.CellFormat(width, fontSize, line, "", 0, textAlignStr, false, 0, "")
 		w.Pdf.Ln(-1)
+
+		if maxLines > 0 && lineIndex == maxLines-1 {
+			break
+		}
 	}
 
 	endY := w.Pdf.GetY()
@@ -282,6 +320,8 @@ func (w *Writer) setFontStyles(
 	underline bool,
 	strikeOut bool,
 ) {
+	// FIXME: only call this method when fontSize is different
+	// This method writes data to the pdf, so it should be called only when necessary
 	w.Pdf.SetFontUnitSize(fontSize)
 
 	r, g, b, _ := color.RGBA()

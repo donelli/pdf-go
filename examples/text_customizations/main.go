@@ -17,7 +17,8 @@ func main() {
 		tpdf.Text(strings.Repeat("CenterAlign. ", 15)).Align(tpdf.TextAlignCenter),
 		tpdf.Text("With link").Link("https://google.com"),
 		tpdf.Text(strings.Repeat("Multi line link. ", 10)).Link("https://google.com"),
-	).WithSpacing(8)
+		tpdf.Text("ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC AA B C D E F G H").MaxLines(1),
+	).WithSpacing(10)
 
 	generator := tpdf.NewGenerator()
 	generator.SetMargins(8, 8, 8, 8)
