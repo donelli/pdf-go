@@ -11,6 +11,8 @@ import (
 
 const debug = false
 const debugDrawPageMargin = false
+const debugDrawFooterArea = false
+const debugDrawTextBounds = false
 
 type Writer struct {
 	Pdf              *fpdf.Fpdf
@@ -24,6 +26,7 @@ type Writer struct {
 	ignorePageBreak  bool
 	defaultFontSize  float64
 	defaultFontColor color.Color
+	footerRenderer   func(page int, totalPagesAlias string) Widget
 }
 
 func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
@@ -48,8 +51,6 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 
 	pdf.AliasNbPages(w.getNbAlias())
 
-	w.AddPage()
-
 	if debug {
 		pageWidth, pageHeight := pdf.GetPageSize()
 		fmt.Println("[DEBUG] Created writer. page width", pageWidth, "page height", pageHeight, "max width", w.MaxWidth(), "max height", w.MaxHeight())
@@ -62,6 +63,12 @@ func (w *Writer) AddPage() {
 	w.Pdf.AddPage()
 	w.y = w.marginTop
 
+	w.computeFooterHeight(w.Pdf.PageNo())
+
+	if debug {
+		fmt.Println("[DEBUG] AddPage")
+	}
+
 	if debugDrawPageMargin {
 		w.ignorePageBreak = true
 
@@ -72,6 +79,22 @@ func (w *Writer) AddPage() {
 		w.Pdf.Rect(0, 0, w.marginLeft, pageHeight, "F")
 		w.Pdf.Rect(pageWidth-w.marginRight, 0, w.marginRight, pageHeight, "F")
 		w.Pdf.Rect(0, pageHeight-w.marginBottom, pageWidth, w.marginBottom, "F")
+
+		w.ignorePageBreak = false
+	}
+
+	if debugDrawFooterArea {
+		w.ignorePageBreak = true
+		pageWidth, pageHeight := w.Pdf.GetPageSize()
+
+		w.Pdf.SetFillColor(176, 176, 255)
+
+		x := w.marginLeft
+		y := pageHeight - w.marginBottom - w.footerHeight
+		width := pageWidth - w.marginLeft - w.marginRight
+		height := w.footerHeight
+
+		w.Pdf.Rect(x, y, width, height, "F")
 
 		w.ignorePageBreak = false
 	}
@@ -146,6 +169,8 @@ func (w *Writer) BreakPage() {
 }
 
 func (w *Writer) RenderWidget(widget Widget) error {
+	w.AddPage()
+
 	context := w.NewBuildContext()
 
 	err := widget.Render(context)
@@ -163,9 +188,8 @@ func (w *Writer) getNbAlias() string {
 func (w *Writer) SetFooter(
 	handler func(page int, totalPagesAlias string) Widget,
 ) {
-	w.computeAndSetFooterHeight(handler)
 
-	w.Pdf.SetFooterFunc(func() {
+	renderer := func() {
 		page := w.Pdf.PageNo()
 		w.ignorePageBreak = true
 
@@ -177,21 +201,26 @@ func (w *Writer) SetFooter(
 		footerWidget.Render(context)
 
 		w.ignorePageBreak = false
-	})
+	}
+
+	w.Pdf.SetFooterFunc(renderer)
+	w.footerRenderer = handler
 }
 
-func (w *Writer) computeAndSetFooterHeight(
-	handler func(page int, totalPagesAlias string) Widget,
-) {
-	footerWidget := handler(0, w.getNbAlias())
+func (w *Writer) computeFooterHeight(pageNumber int) {
+	if w.footerRenderer == nil {
+		return
+	}
+
+	footerWidget := w.footerRenderer(pageNumber, w.getNbAlias())
 	context := w.NewBuildContext()
 
-	_, actualHeight := footerWidget.CalculateSize(context)
+	_, footerHeight := footerWidget.CalculateSize(context)
 
-	w.footerHeight = actualHeight
+	w.footerHeight = footerHeight
 
 	if debug {
-		fmt.Println("[DEBUG] Footer height:", w.footerHeight)
+		fmt.Println("[DEBUG] Set footer height of ", footerHeight, " for page ", pageNumber)
 	}
 }
 
@@ -303,8 +332,14 @@ func (w *Writer) WriteMultiline(
 			fmt.Println("[DEBUG] CellFormat: text:", line, "width", width)
 		}
 
+		borderStr := ""
+		if debugDrawTextBounds {
+			w.Pdf.SetDrawColor(0, 0, 255)
+			borderStr = "1"
+		}
+
 		w.Pdf.SetX(x)
-		w.Pdf.CellFormat(width, fontSize, line, "", 0, textAlignStr, false, 0, "")
+		w.Pdf.CellFormat(width, fontSize, line, borderStr, 0, textAlignStr, false, 0, "")
 		w.Pdf.Ln(-1)
 
 		if maxLines > 0 && lineIndex == maxLines-1 {

@@ -5,12 +5,15 @@ import (
 	"tpdf/internal/core"
 )
 
+type Widget core.Widget
+
 type Generator struct {
 	writer                                           *core.Writer
 	topMargin, rightMargin, bottomMargin, leftMargin float64
 	mainWidget                                       core.Widget
 	defaultFontSize                                  *float64
 	defaultFontColor                                 *color.Color
+	footerHandler                                    func(page int, totalPagesAlias string) Widget
 }
 
 func NewGenerator() *Generator {
@@ -41,6 +44,10 @@ func (g *Generator) SetDefaultFontColor(color color.Color) {
 	g.defaultFontColor = &color
 }
 
+func (g *Generator) SetFooter(handler func(page int, totalPagesAlias string) Widget) {
+	g.footerHandler = handler
+}
+
 func (g *Generator) GenerateToFile(filename string) error {
 	g.writer = core.NewWriter(g.topMargin, g.rightMargin, g.bottomMargin, g.leftMargin)
 
@@ -50,6 +57,12 @@ func (g *Generator) GenerateToFile(filename string) error {
 
 	if g.defaultFontColor != nil {
 		g.writer.SetDefaultFontColor(*g.defaultFontColor)
+	}
+
+	if g.footerHandler != nil {
+		g.writer.SetFooter(func(page int, totalPagesAlias string) core.Widget {
+			return g.footerHandler(page, totalPagesAlias)
+		})
 	}
 
 	g.writer.RenderWidget(g.mainWidget)
