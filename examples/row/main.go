@@ -18,7 +18,19 @@ func main() {
 			),
 		).WithMainAxisSize(tpdf.MainAxisSizeMin),
 		tpdf.Text("Bottom Bottom Bottom"),
-	)
+		tpdf.Row(
+			tpdf.Text("A"),
+			tpdf.Text("B"),
+			tpdf.Text("C"),
+			tpdf.Text("D"),
+		).WithSpacing(8),
+		tpdf.Row(
+			tpdf.Text("A"),
+			tpdf.Text("B"),
+			tpdf.Text("C"),
+			tpdf.Text("D"),
+		).WithSpacing(8).WithMainAxisSize(tpdf.MainAxisSizeMin),
+	).WithSpacing(4)
 
 	generator.SetMainWidget(content)
 	generator.GenerateToFile("row.pdf")

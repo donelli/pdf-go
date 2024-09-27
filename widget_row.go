@@ -8,6 +8,7 @@ import (
 type row struct {
 	children     []core.Widget
 	mainAxisSize MainAxisSize
+	spacing      float64
 }
 
 func Row(
@@ -16,22 +17,25 @@ func Row(
 	return &row{
 		children:     children,
 		mainAxisSize: MainAxisSizeMax,
+		spacing:      0,
 	}
 }
 
 func (r *row) getWidthPerChild(ctx *core.RenderContext) []float64 {
 	widthPerChild := make([]float64, len(r.children))
 
+	maxWidthWithoutSpacing := ctx.MaxWidth - float64(len(r.children)-1)*r.spacing
+
 	if r.mainAxisSize == MainAxisSizeMax {
 		for i := range r.children {
-			widthPerChild[i] = ctx.MaxWidth / float64(len(r.children))
+			widthPerChild[i] = maxWidthWithoutSpacing / float64(len(r.children))
 		}
 
 		return widthPerChild
 	}
 
 	originalWidths := make([]float64, len(r.children))
-	availableWidth := ctx.MaxWidth
+	availableWidth := maxWidthWithoutSpacing
 	numberOfExpands := 0.0
 
 	for i, child := range r.children {
@@ -81,14 +85,6 @@ func (r *row) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return width, height
 }
 
-func sum(numbers []float64) float64 {
-	var result float64 = 0
-	for i := 0; i < len(numbers); i++ {
-		result += numbers[i]
-	}
-	return result
-}
-
 func (r *row) Render(ctx *core.RenderContext) error {
 
 	width, height := r.CalculateSize(ctx)
@@ -96,19 +92,12 @@ func (r *row) Render(ctx *core.RenderContext) error {
 
 	widthPerChild := r.getWidthPerChild(ctx)
 
-	fmt.Println(widthPerChild)
-	fmt.Println("sum" + fmt.Sprint(sum(widthPerChild)))
-	fmt.Println("max" + fmt.Sprint(ctx.MaxWidth))
-
 	for index, child := range r.children {
 		childWidth := widthPerChild[index]
 
 		x := ctx.Writer.X()
 
-		fmt.Println("current x: " + fmt.Sprint(x))
-
 		if r.mainAxisSize == MainAxisSizeMin {
-
 			maxX := ctx.MaxWidth + ctx.HorizontalMargin()
 			nextX := x + childWidth
 
@@ -124,7 +113,7 @@ func (r *row) Render(ctx *core.RenderContext) error {
 			return err
 		}
 
-		ctx.Writer.SetX(x + childWidth)
+		ctx.Writer.SetX(x + childWidth + r.spacing)
 	}
 
 	return nil
@@ -132,5 +121,10 @@ func (r *row) Render(ctx *core.RenderContext) error {
 
 func (r *row) WithMainAxisSize(mainAxisSize MainAxisSize) *row {
 	r.mainAxisSize = mainAxisSize
+	return r
+}
+
+func (r *row) WithSpacing(spacing float64) *row {
+	r.spacing = spacing
 	return r
 }
