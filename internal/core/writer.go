@@ -9,7 +9,8 @@ import (
 	"github.com/go-pdf/fpdf"
 )
 
-const debug = true
+const debug = false
+const debugDrawPageMargin = false
 
 type Writer struct {
 	Pdf              *fpdf.Fpdf
@@ -32,8 +33,6 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 	pdf.SetMargins(0, 0, 0)
 	pdf.SetAutoPageBreak(false, 0)
 
-	pdf.AddPage()
-
 	w := &Writer{
 		Pdf:              pdf,
 		x:                leftMargin,
@@ -49,12 +48,34 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 
 	pdf.AliasNbPages(w.getNbAlias())
 
+	w.AddPage()
+
 	if debug {
 		pageWidth, pageHeight := pdf.GetPageSize()
 		fmt.Println("[DEBUG] Created writer. page width", pageWidth, "page height", pageHeight, "max width", w.MaxWidth(), "max height", w.MaxHeight())
 	}
 
 	return w
+}
+
+func (w *Writer) AddPage() {
+	w.Pdf.AddPage()
+	w.y = w.marginTop
+
+	if debugDrawPageMargin {
+		w.ignorePageBreak = true
+
+		pageWidth, pageHeight := w.Pdf.GetPageSize()
+
+		w.Pdf.SetFillColor(255, 140, 140)
+		w.Pdf.Rect(0, 0, pageWidth, w.marginTop, "F")
+		w.Pdf.Rect(0, 0, w.marginLeft, pageHeight, "F")
+		w.Pdf.Rect(pageWidth-w.marginRight, 0, w.marginRight, pageHeight, "F")
+		w.Pdf.Rect(0, pageHeight-w.marginBottom, pageWidth, w.marginBottom, "F")
+
+		w.ignorePageBreak = false
+	}
+
 }
 
 func (w *Writer) MaxWidth() float64 {
@@ -121,8 +142,7 @@ func (w *Writer) BreakPage() {
 		fmt.Println("[DEBUG] BreakPage")
 	}
 
-	w.Pdf.AddPage()
-	w.y = w.marginTop
+	w.AddPage()
 }
 
 func (w *Writer) RenderWidget(widget Widget) error {
