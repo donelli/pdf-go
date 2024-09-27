@@ -7,10 +7,25 @@ import (
 func main() {
 	content := tpdf.Column(
 		tpdf.Row(
-			tpdf.Container().WithSize(100, 100).WithBackgroundColor(tpdf.HexToRGBA("#ff0000")),
-			tpdf.Container().WithSize(50, 50).WithBackgroundColor(tpdf.HexToRGBA("#0000ff")),
-		).WithMainAxisSize(tpdf.MainAxisSizeMin).WithSpacing(8),
-		tpdf.Container().WithSize(100, 20).WithBackgroundColor(tpdf.HexToRGBA("#00ff00")),
+			tpdf.Container(nil).
+				WithSize(100, 100).
+				WithBackgroundColor(tpdf.HexToRGBA("#ff0000")),
+
+			tpdf.Container(nil).
+				WithSize(50, 50).
+				WithBackgroundColor(tpdf.HexToRGBA("#0000ff")),
+		).
+			WithMainAxisSize(tpdf.MainAxisSizeMin).
+			WithSpacing(8),
+
+		tpdf.Container(nil).
+			WithSize(100, 20).
+			WithBackgroundColor(tpdf.HexToRGBA("#00ff00")),
+
+		tpdf.Container(
+			tpdf.Text("Container with child"),
+		).
+			WithBackgroundColor(tpdf.HexToRGBA("#bbffbb")),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

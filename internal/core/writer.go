@@ -13,6 +13,7 @@ const debug = false
 const debugDrawPageMargin = false
 const debugDrawFooterArea = false
 const debugDrawTextBounds = false
+const debugDrawRectBounds = false
 
 type Writer struct {
 	Pdf              *fpdf.Fpdf
@@ -74,7 +75,8 @@ func (w *Writer) AddPage() {
 
 		pageWidth, pageHeight := w.Pdf.GetPageSize()
 
-		w.Pdf.SetFillColor(255, 140, 140)
+		w.setFillColor(color.RGBA{255, 140, 140, 255})
+
 		w.Pdf.Rect(0, 0, pageWidth, w.marginTop, "F")
 		w.Pdf.Rect(0, 0, w.marginLeft, pageHeight, "F")
 		w.Pdf.Rect(pageWidth-w.marginRight, 0, w.marginRight, pageHeight, "F")
@@ -87,7 +89,7 @@ func (w *Writer) AddPage() {
 		w.ignorePageBreak = true
 		pageWidth, pageHeight := w.Pdf.GetPageSize()
 
-		w.Pdf.SetFillColor(176, 176, 255)
+		w.setFillColor(color.RGBA{176, 176, 255, 255})
 
 		x := w.marginLeft
 		y := pageHeight - w.marginBottom - w.footerHeight
@@ -379,9 +381,7 @@ func (w *Writer) setFontStyles(
 	// This method writes data to the pdf, so it should be called only when necessary
 	w.Pdf.SetFontUnitSize(fontSize)
 
-	r, g, b, _ := color.RGBA()
-
-	w.Pdf.SetTextColor(int(r), int(g), int(b))
+	w.setTextColor(color)
 
 	styleString := ""
 
@@ -445,8 +445,27 @@ func (w *Writer) DefaultFontColor() color.Color {
 }
 
 func (w *Writer) Rect(width, height float64, color color.Color) {
+	w.setFillColor(color)
+
+	w.Pdf.Rect(w.X(), w.Y(), width, height, "F")
+
+	if debugDrawRectBounds {
+		w.Pdf.SetDrawColor(0, 0, 255)
+		w.Pdf.Rect(w.X(), w.Y(), width, height, "D")
+	}
+}
+
+func (w *Writer) setFillColor(color color.Color) {
 	r, g, b, _ := color.RGBA()
 
-	w.Pdf.SetFillColor(int(r), int(g), int(b))
-	w.Pdf.Rect(w.X(), w.Y(), width, height, "F")
+	// FIXME: only call this method when fill color is different
+	// This method writes data to the pdf, so it should be called only when necessary
+
+	w.Pdf.SetFillColor(int(r/255), int(g/255), int(b/255))
+}
+
+func (w *Writer) setTextColor(color color.Color) {
+	r, g, b, _ := color.RGBA()
+
+	w.Pdf.SetTextColor(int(r/255), int(g/255), int(b/255))
 }
