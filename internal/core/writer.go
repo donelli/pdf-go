@@ -443,3 +443,10 @@ func (w *Writer) SetDefaultFontColor(color color.Color) {
 func (w *Writer) DefaultFontColor() color.Color {
 	return w.defaultFontColor
 }
+
+func (w *Writer) Rect(width, height float64, color color.Color) {
+	r, g, b, _ := color.RGBA()
+
+	w.Pdf.SetFillColor(int(r), int(g), int(b))
+	w.Pdf.Rect(w.X(), w.Y(), width, height, "F")
+}
