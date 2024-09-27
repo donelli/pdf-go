@@ -10,6 +10,10 @@ type container struct {
 	height          *float64
 	backgroundColor *color.Color
 	child           core.Widget
+	paddingLeft     float64
+	paddingRight    float64
+	paddingTop      float64
+	paddingBottom   float64
 }
 
 func Container(child core.Widget) *container {
@@ -39,6 +43,34 @@ func (c *container) WithBackgroundColor(backgroundColor color.Color) *container 
 	return c
 }
 
+func (c *container) PaddingAll(padding float64) *container {
+	c.paddingLeft = padding
+	c.paddingRight = padding
+	c.paddingTop = padding
+	c.paddingBottom = padding
+	return c
+}
+
+func (c *container) Padding(paddingLeft, paddingRight, paddingTop, paddingBottom float64) *container {
+	c.paddingLeft = paddingLeft
+	c.paddingRight = paddingRight
+	c.paddingTop = paddingTop
+	c.paddingBottom = paddingBottom
+	return c
+}
+
+func (c *container) PaddingHorizontal(padding float64) *container {
+	c.paddingLeft = padding
+	c.paddingRight = padding
+	return c
+}
+
+func (c *container) PaddingVertical(padding float64) *container {
+	c.paddingTop = padding
+	c.paddingBottom = padding
+	return c
+}
+
 func (c *container) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	width := 0.0
 	if c.width != nil {
@@ -51,7 +83,18 @@ func (c *container) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	}
 
 	if c.child != nil && (width == 0 || height == 0) {
-		childWidth, childHeight := c.child.CalculateSize(ctx)
+
+		updatedCtx := ctx.Copy()
+
+		if width != 0 {
+			updatedCtx.MaxWidth = width
+		}
+
+		if height != 0 {
+			updatedCtx.MaxHeight = height
+		}
+
+		childWidth, childHeight := c.child.CalculateSize(updatedCtx)
 
 		if width == 0 {
 			width = childWidth
@@ -61,6 +104,9 @@ func (c *container) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 			height = childHeight
 		}
 	}
+
+	width += c.paddingLeft + c.paddingRight
+	height += c.paddingTop + c.paddingBottom
 
 	return float64(width), float64(height)
 }
@@ -74,7 +120,15 @@ func (c *container) Render(ctx *core.RenderContext) error {
 	}
 
 	if c.child != nil {
-		c.child.Render(ctx)
+		ctx.Writer.SetOffsets(c.paddingLeft, c.paddingTop)
+
+		updatedCtx := ctx.Copy()
+		updatedCtx.MaxWidth = width - c.paddingLeft - c.paddingRight
+		updatedCtx.MaxHeight = height - c.paddingTop - c.paddingBottom
+
+		c.child.Render(updatedCtx)
+
+		ctx.Writer.ClearOffsets()
 	}
 
 	return nil

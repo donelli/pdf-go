@@ -23,9 +23,17 @@ func main() {
 			WithBackgroundColor(tpdf.HexToRGBA("#00ff00")),
 
 		tpdf.Container(
-			tpdf.Text("Container with child"),
+			tpdf.Text("Container with child and padding"),
 		).
-			WithBackgroundColor(tpdf.HexToRGBA("#bbffbb")),
+			WithBackgroundColor(tpdf.HexToRGBA("#bbffbb")).
+			PaddingAll(8),
+
+		tpdf.Container(
+			tpdf.Text("Container with child and padding and width"),
+		).
+			WithWidth(100).
+			WithBackgroundColor(tpdf.HexToRGBA("#dddddd")).
+			PaddingAll(8),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

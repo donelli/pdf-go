@@ -17,8 +17,8 @@ const debugDrawRectBounds = false
 
 type Writer struct {
 	Pdf              *fpdf.Fpdf
-	x                float64
-	y                float64
+	internalX        float64
+	internalY        float64
 	footerHeight     float64
 	marginLeft       float64
 	marginRight      float64
@@ -28,6 +28,8 @@ type Writer struct {
 	defaultFontSize  float64
 	defaultFontColor color.Color
 	footerRenderer   func(page int, totalPagesAlias string) Widget
+	offsetX          float64
+	offsetY          float64
 }
 
 func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
@@ -39,8 +41,8 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 
 	w := &Writer{
 		Pdf:              pdf,
-		x:                leftMargin,
-		y:                topMargin,
+		internalX:        leftMargin,
+		internalY:        topMargin,
 		marginLeft:       leftMargin,
 		marginRight:      rightMargin,
 		marginTop:        topMargin,
@@ -62,7 +64,7 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 
 func (w *Writer) AddPage() {
 	w.Pdf.AddPage()
-	w.y = w.marginTop
+	w.internalY = w.marginTop
 
 	w.computeFooterHeight(w.Pdf.PageNo())
 
@@ -135,7 +137,7 @@ func (w *Writer) SetX(x float64) {
 		fmt.Println("[DEBUG] SetX:", x)
 	}
 
-	w.x = x
+	w.internalX = x
 }
 
 func (w *Writer) SetY(y float64) {
@@ -143,9 +145,9 @@ func (w *Writer) SetY(y float64) {
 		fmt.Println("[DEBUG] SetY:", y)
 	}
 
-	w.y = y
+	w.internalY = y
 
-	if w.y >= w.MaxHeight() {
+	if w.Y() >= w.MaxHeight() {
 		w.BreakPage()
 	}
 }
@@ -155,7 +157,7 @@ func (w *Writer) SetYWithoutPageBreakCheck(y float64) {
 		fmt.Println("[DEBUG] SetYWithoutPageBreakCheck:", y)
 	}
 
-	w.y = y
+	w.internalY = y
 }
 
 func (w *Writer) BreakPage() {
@@ -300,7 +302,7 @@ func (w *Writer) WriteMultiline(
 	maxLines int,
 ) {
 
-	w.Pdf.SetXY(w.x, w.y)
+	w.Pdf.SetXY(w.X(), w.Y())
 
 	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
 
@@ -312,7 +314,7 @@ func (w *Writer) WriteMultiline(
 
 	lines := w.Pdf.SplitText(text, width)
 
-	x := w.x
+	x := w.X()
 	for lineIndex, line := range lines {
 
 		shouldAddEllipsis := maxLines > 0 && lineIndex == maxLines-1 && len(lines) > maxLines
@@ -352,7 +354,7 @@ func (w *Writer) WriteMultiline(
 	endY := w.Pdf.GetY()
 
 	if link != "" {
-		w.Pdf.LinkString(w.x, w.y, width, endY-w.y, link)
+		w.Pdf.LinkString(w.X(), w.Y(), width, endY-w.Y(), link)
 	}
 }
 
@@ -409,20 +411,20 @@ func (w *Writer) setFontStyles(
 }
 
 func (w *Writer) X() float64 {
-	return w.x
+	return w.internalX + w.offsetX
 }
 
 func (w *Writer) Y() float64 {
-	return w.y
+	return w.internalY + w.offsetY
 }
 
 func (w *Writer) WillWrite(width, height float64) {
 
 	if debug {
-		fmt.Println("[DEBUG] WillWrite: w:", width, "h:", height, "y:", w.y, "maxHeight:", w.MaxHeight())
+		fmt.Println("[DEBUG] WillWrite: w:", width, "h:", height, "y:", w.Y(), "maxHeight:", w.MaxHeight())
 	}
 
-	if w.y+height > w.MaxHeight() {
+	if w.Y()+height > w.MaxHeight() {
 		w.BreakPage()
 	}
 
@@ -468,4 +470,14 @@ func (w *Writer) setTextColor(color color.Color) {
 	r, g, b, _ := color.RGBA()
 
 	w.Pdf.SetTextColor(int(r/255), int(g/255), int(b/255))
+}
+
+func (w *Writer) SetOffsets(offsetX, offsetY float64) {
+	w.offsetX = offsetX
+	w.offsetY = offsetY
+}
+
+func (w *Writer) ClearOffsets() {
+	w.offsetX = 0
+	w.offsetY = 0
 }
