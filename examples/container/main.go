@@ -34,6 +34,20 @@ func main() {
 			WithWidth(100).
 			WithBackgroundColor(tpdf.HexToRGBA("#dddddd")).
 			PaddingAll(8),
+
+		tpdf.Container(
+			tpdf.Text("A"),
+		).
+			WithSize(40, 40).
+			WithBackgroundColor(tpdf.HexToRGBA("#dddddd")).
+			BorderRadius(tpdf.BorderRadiusAll(4)),
+
+		tpdf.Container(
+			tpdf.Text("Border radius in specific corders"),
+		).
+			WithBackgroundColor(tpdf.HexToRGBA("#ff00ff")).
+			BorderRadius(tpdf.BorderRadiusEach(4, 0, 0, 4)).
+			PaddingAll(2),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

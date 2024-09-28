@@ -13,6 +13,7 @@ type container struct {
 	paddingRight    float64
 	paddingTop      float64
 	paddingBottom   float64
+	borderRadius    borderRadius
 }
 
 func Container(child Widget) *container {
@@ -70,6 +71,11 @@ func (c *container) PaddingVertical(padding float64) *container {
 	return c
 }
 
+func (c *container) BorderRadius(borderRadius borderRadius) *container {
+	c.borderRadius = borderRadius
+	return c
+}
+
 func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
 	width := 0.0
 	if c.width != nil {
@@ -115,7 +121,13 @@ func (c *container) Render(ctx *RenderContext) error {
 	width, height := c.CalculateSize(ctx)
 
 	if c.backgroundColor != nil {
-		ctx.Writer.Rect(width, height, *c.backgroundColor)
+
+		if c.borderRadius != nil {
+			ctx.Writer.RoundedRect(width, height, *c.backgroundColor, c.borderRadius)
+		} else {
+			ctx.Writer.Rect(width, height, *c.backgroundColor)
+		}
+
 	}
 
 	if c.child != nil {

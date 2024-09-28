@@ -457,6 +457,22 @@ func (w *Writer) Rect(width, height float64, color color.Color) {
 	}
 }
 
+func (w *Writer) RoundedRect(width, height float64, color color.Color, borderRadius borderRadius) {
+	w.setFillColor(color)
+
+	w.Pdf.RoundedRectExt(w.X(), w.Y(),
+		width, height,
+		borderRadius.TopLeft(), borderRadius.TopRight(),
+		borderRadius.BottomRight(), borderRadius.BottomLeft(),
+		"F",
+	)
+
+	if debugDrawRectBounds {
+		w.Pdf.SetDrawColor(0, 0, 255)
+		w.Pdf.Rect(w.X(), w.Y(), width, height, "D")
+	}
+}
+
 func (w *Writer) setFillColor(color color.Color) {
 	r, g, b, _ := color.RGBA()
 
