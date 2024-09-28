@@ -292,7 +292,7 @@ func (w *Writer) WriteMultiline(
 	width float64,
 	text string,
 	fontSize float64,
-	color color.Color,
+	fontColor color.Color,
 	bold bool,
 	italic bool,
 	underline bool,
@@ -304,7 +304,7 @@ func (w *Writer) WriteMultiline(
 
 	w.Pdf.SetXY(w.X(), w.Y())
 
-	w.setFontStyles(fontSize, color, bold, italic, underline, strikeOut)
+	w.setFontStyles(fontSize, fontColor, bold, italic, underline, strikeOut)
 
 	textAlignStr := w.textAlignToPdfStr(textAlign)
 
@@ -338,7 +338,7 @@ func (w *Writer) WriteMultiline(
 
 		borderStr := ""
 		if debugDrawTextBounds {
-			w.Pdf.SetDrawColor(0, 0, 255)
+			w.setDrawColor(color.RGBA{0, 0, 255, 255})
 			borderStr = "1"
 		}
 
@@ -446,29 +446,54 @@ func (w *Writer) DefaultFontColor() color.Color {
 	return w.defaultFontColor
 }
 
-func (w *Writer) Rect(width, height float64, color color.Color) {
-	w.setFillColor(color)
+func (w *Writer) Rect(width, height float64, backgroundColor color.Color, borderColor color.Color) {
+	styleStr := ""
 
-	w.Pdf.Rect(w.X(), w.Y(), width, height, "F")
+	if backgroundColor != nil {
+		w.setFillColor(backgroundColor)
+		styleStr += "F"
+	}
+
+	if borderColor != nil {
+		w.setDrawColor(borderColor)
+		styleStr += "D"
+	}
+
+	w.Pdf.Rect(w.X(), w.Y(), width, height, styleStr)
 
 	if debugDrawRectBounds {
-		w.Pdf.SetDrawColor(0, 0, 255)
+		w.setDrawColor(color.RGBA{0, 0, 255, 255})
 		w.Pdf.Rect(w.X(), w.Y(), width, height, "D")
 	}
 }
 
-func (w *Writer) RoundedRect(width, height float64, color color.Color, borderRadius borderRadius) {
-	w.setFillColor(color)
+func (w *Writer) RoundedRect(
+	width, height float64,
+	backgroundColor color.Color,
+	borderRadius borderRadius,
+	borderColor color.Color,
+) {
+	styleStr := ""
+
+	if backgroundColor != nil {
+		w.setFillColor(backgroundColor)
+		styleStr += "F"
+	}
+
+	if borderColor != nil {
+		w.setDrawColor(borderColor)
+		styleStr += "D"
+	}
 
 	w.Pdf.RoundedRectExt(w.X(), w.Y(),
 		width, height,
 		borderRadius.TopLeft(), borderRadius.TopRight(),
 		borderRadius.BottomRight(), borderRadius.BottomLeft(),
-		"F",
+		styleStr,
 	)
 
 	if debugDrawRectBounds {
-		w.Pdf.SetDrawColor(0, 0, 255)
+		w.setDrawColor(color.RGBA{0, 0, 255, 255})
 		w.Pdf.Rect(w.X(), w.Y(), width, height, "D")
 	}
 }
@@ -480,6 +505,15 @@ func (w *Writer) setFillColor(color color.Color) {
 	// This method writes data to the pdf, so it should be called only when necessary
 
 	w.Pdf.SetFillColor(int(r/255), int(g/255), int(b/255))
+}
+
+func (w *Writer) setDrawColor(color color.Color) {
+	r, g, b, _ := color.RGBA()
+
+	// FIXME: only call this method when fill color is different
+	// This method writes data to the pdf, so it should be called only when necessary
+
+	w.Pdf.SetDrawColor(int(r/255), int(g/255), int(b/255))
 }
 
 func (w *Writer) setTextColor(color color.Color) {

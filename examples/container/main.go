@@ -48,6 +48,19 @@ func main() {
 			WithBackgroundColor(tpdf.HexToRGBA("#ff00ff")).
 			BorderRadius(tpdf.BorderRadiusEach(4, 0, 0, 4)).
 			PaddingAll(2),
+
+		tpdf.Container(
+			tpdf.Text("Bordered"),
+		).
+			PaddingAll(4).
+			Bordered(tpdf.HexToRGBA("#00ff00")),
+
+		tpdf.Container(
+			tpdf.Text("Rounded Bordered"),
+		).
+			PaddingAll(4).
+			BorderRadius(tpdf.BorderRadiusAll(4)).
+			Bordered(tpdf.HexToRGBA("#00ff00")),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()
