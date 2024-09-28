@@ -89,6 +89,8 @@ func (r *row) Render(ctx *RenderContext) error {
 	width, height := r.CalculateSize(ctx)
 	ctx.Writer.WillWrite(width, height)
 
+	y := ctx.Writer.Y()
+
 	widthPerChild := r.getWidthPerChild(ctx)
 
 	for index, child := range r.children {
@@ -104,6 +106,8 @@ func (r *row) Render(ctx *RenderContext) error {
 				panic(fmt.Sprint("overflow by ", nextX-maxX))
 			}
 		}
+
+		ctx.Writer.SetY(y)
 
 		context := ctx.Copy()
 		context.MaxWidth = childWidth
