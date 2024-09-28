@@ -8,7 +8,7 @@ tpdf is a layout engine for building PDFs in golang.
 - [ ] Bookmarks
 - [ ] Internal links (anchors)
 - [ ] Table widget
-- [ ] Center widget
+- [X] Align widget
 - [ ] SVG widget
 - [ ] Image widget
 - [ ] Custom fonts
