@@ -144,7 +144,7 @@ func (c *container) Render(ctx *RenderContext) error {
 	}
 
 	if c.child != nil {
-		ctx.Writer.SetOffsets(c.paddingLeft, c.paddingTop)
+		ctx.Writer.AddOffsets(c.paddingLeft, c.paddingTop)
 
 		updatedCtx := ctx.Copy()
 		updatedCtx.MaxWidth = width - c.paddingLeft - c.paddingRight
@@ -152,7 +152,7 @@ func (c *container) Render(ctx *RenderContext) error {
 
 		c.child.Render(updatedCtx)
 
-		ctx.Writer.ClearOffsets()
+		ctx.Writer.SubtractOffsets(c.paddingLeft, c.paddingTop)
 	}
 
 	return nil

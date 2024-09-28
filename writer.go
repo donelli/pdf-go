@@ -462,7 +462,9 @@ func (w *Writer) Rect(
 		styleStr += "D"
 	}
 
-	w.Pdf.Rect(w.X(), w.Y(), width, height, styleStr)
+	if styleStr != "" {
+		w.Pdf.Rect(w.X(), w.Y(), width, height, styleStr)
+	}
 
 	if debugDrawRectBounds {
 		w.setDrawColor(color.RGBA{0, 0, 255, 255})
@@ -490,12 +492,14 @@ func (w *Writer) RoundedRect(
 		styleStr += "D"
 	}
 
-	w.Pdf.RoundedRectExt(w.X(), w.Y(),
-		width, height,
-		borderRadius.TopLeft(), borderRadius.TopRight(),
-		borderRadius.BottomRight(), borderRadius.BottomLeft(),
-		styleStr,
-	)
+	if styleStr != "" {
+		w.Pdf.RoundedRectExt(w.X(), w.Y(),
+			width, height,
+			borderRadius.TopLeft(), borderRadius.TopRight(),
+			borderRadius.BottomRight(), borderRadius.BottomLeft(),
+			styleStr,
+		)
+	}
 
 	if debugDrawRectBounds {
 		w.setDrawColor(color.RGBA{0, 0, 255, 255})
@@ -558,12 +562,12 @@ func (w *Writer) setTextColor(color color.Color) {
 	w.Pdf.SetTextColor(int(r/255), int(g/255), int(b/255))
 }
 
-func (w *Writer) SetOffsets(offsetX, offsetY float64) {
-	w.offsetX = offsetX
-	w.offsetY = offsetY
+func (w *Writer) AddOffsets(offsetX, offsetY float64) {
+	w.offsetX += offsetX
+	w.offsetY += offsetY
 }
 
-func (w *Writer) ClearOffsets() {
-	w.offsetX = 0
-	w.offsetY = 0
+func (w *Writer) SubtractOffsets(offsetX, offsetY float64) {
+	w.offsetX -= offsetX
+	w.offsetY -= offsetY
 }
