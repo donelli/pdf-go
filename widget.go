@@ -1,4 +1,4 @@
-package core
+package tpdf
 
 type Widget interface {
 	Render(ctx *RenderContext) error

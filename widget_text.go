@@ -2,7 +2,6 @@ package tpdf
 
 import (
 	"image/color"
-	"tpdf/internal/core"
 )
 
 type text struct {
@@ -77,7 +76,7 @@ func (t *text) MaxLines(maxLines int) *text {
 	return t
 }
 
-func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
+func (t *text) calculatedFontSize(ctx *RenderContext) float64 {
 	if t.fontSize != nil {
 		return *t.fontSize
 	}
@@ -85,7 +84,7 @@ func (t *text) calculatedFontSize(ctx *core.RenderContext) float64 {
 	return ctx.DefaultFontSize()
 }
 
-func (t *text) calculatedFontColor(ctx *core.RenderContext) color.Color {
+func (t *text) calculatedFontColor(ctx *RenderContext) color.Color {
 	if t.color != nil {
 		return *t.color
 	}
@@ -93,7 +92,7 @@ func (t *text) calculatedFontColor(ctx *core.RenderContext) color.Color {
 	return ctx.DefaultFontColor()
 }
 
-func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
+func (t *text) CalculateSize(ctx *RenderContext) (float64, float64) {
 	return ctx.Writer.GetStringSize(
 		t.value,
 		t.calculatedFontSize(ctx),
@@ -107,7 +106,7 @@ func (t *text) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	)
 }
 
-func (t *text) Render(ctx *core.RenderContext) error {
+func (t *text) Render(ctx *RenderContext) error {
 	ctx.Writer.WriteMultiline(
 		ctx.MaxWidth,
 		t.value,
@@ -117,7 +116,7 @@ func (t *text) Render(ctx *core.RenderContext) error {
 		t.italic,
 		t.underline,
 		t.strikeOut,
-		core.TextAlign(t.textAlign),
+		TextAlign(t.textAlign),
 		t.link,
 		t.maxLines,
 	)

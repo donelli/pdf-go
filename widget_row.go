@@ -2,17 +2,16 @@ package tpdf
 
 import (
 	"fmt"
-	"tpdf/internal/core"
 )
 
 type row struct {
-	children     []core.Widget
+	children     []Widget
 	mainAxisSize MainAxisSize
 	spacing      float64
 }
 
 func Row(
-	children ...core.Widget,
+	children ...Widget,
 ) *row {
 	return &row{
 		children:     children,
@@ -21,7 +20,7 @@ func Row(
 	}
 }
 
-func (r *row) getWidthPerChild(ctx *core.RenderContext) []float64 {
+func (r *row) getWidthPerChild(ctx *RenderContext) []float64 {
 	widthPerChild := make([]float64, len(r.children))
 
 	maxWidthWithoutSpacing := ctx.MaxWidth - float64(len(r.children)-1)*r.spacing
@@ -61,7 +60,7 @@ func (r *row) getWidthPerChild(ctx *core.RenderContext) []float64 {
 	return widthPerChild
 }
 
-func (r *row) CalculateSize(ctx *core.RenderContext) (float64, float64) {
+func (r *row) CalculateSize(ctx *RenderContext) (float64, float64) {
 	width := 0.0
 	height := 0.0
 
@@ -85,7 +84,7 @@ func (r *row) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return width, height
 }
 
-func (r *row) Render(ctx *core.RenderContext) error {
+func (r *row) Render(ctx *RenderContext) error {
 
 	width, height := r.CalculateSize(ctx)
 	ctx.Writer.WillWrite(width, height)

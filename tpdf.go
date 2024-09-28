@@ -2,15 +2,12 @@ package tpdf
 
 import (
 	"image/color"
-	"tpdf/internal/core"
 )
 
-type Widget core.Widget
-
 type Generator struct {
-	writer                                           *core.Writer
+	writer                                           *Writer
 	topMargin, rightMargin, bottomMargin, leftMargin float64
-	mainWidget                                       core.Widget
+	mainWidget                                       Widget
 	defaultFontSize                                  *float64
 	defaultFontColor                                 *color.Color
 	footerHandler                                    func(page int, totalPagesAlias string) Widget
@@ -32,7 +29,7 @@ func (g *Generator) SetMargins(top, right, bottom, left float64) {
 	g.leftMargin = left
 }
 
-func (g *Generator) SetMainWidget(widget core.Widget) {
+func (g *Generator) SetMainWidget(widget Widget) {
 	g.mainWidget = widget
 }
 
@@ -49,7 +46,7 @@ func (g *Generator) SetFooter(handler func(page int, totalPagesAlias string) Wid
 }
 
 func (g *Generator) GenerateToFile(filename string) error {
-	g.writer = core.NewWriter(g.topMargin, g.rightMargin, g.bottomMargin, g.leftMargin)
+	g.writer = NewWriter(g.topMargin, g.rightMargin, g.bottomMargin, g.leftMargin)
 
 	if g.defaultFontSize != nil {
 		g.writer.SetDefaultFontSize(*g.defaultFontSize)
@@ -60,7 +57,7 @@ func (g *Generator) GenerateToFile(filename string) error {
 	}
 
 	if g.footerHandler != nil {
-		g.writer.SetFooter(func(page int, totalPagesAlias string) core.Widget {
+		g.writer.SetFooter(func(page int, totalPagesAlias string) Widget {
 			return g.footerHandler(page, totalPagesAlias)
 		})
 	}

@@ -2,21 +2,20 @@ package tpdf
 
 import (
 	"image/color"
-	"tpdf/internal/core"
 )
 
 type container struct {
 	width           *float64
 	height          *float64
 	backgroundColor *color.Color
-	child           core.Widget
+	child           Widget
 	paddingLeft     float64
 	paddingRight    float64
 	paddingTop      float64
 	paddingBottom   float64
 }
 
-func Container(child core.Widget) *container {
+func Container(child Widget) *container {
 	return &container{
 		child: child,
 	}
@@ -71,7 +70,7 @@ func (c *container) PaddingVertical(padding float64) *container {
 	return c
 }
 
-func (c *container) CalculateSize(ctx *core.RenderContext) (float64, float64) {
+func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
 	width := 0.0
 	if c.width != nil {
 		width = *c.width
@@ -111,7 +110,7 @@ func (c *container) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return float64(width), float64(height)
 }
 
-func (c *container) Render(ctx *core.RenderContext) error {
+func (c *container) Render(ctx *RenderContext) error {
 
 	width, height := c.CalculateSize(ctx)
 

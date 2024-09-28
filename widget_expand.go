@@ -1,21 +1,19 @@
 package tpdf
 
-import "tpdf/internal/core"
-
 type expand struct {
-	child core.Widget
+	child Widget
 }
 
-func Expand(child core.Widget) *expand {
+func Expand(child Widget) *expand {
 	return &expand{
 		child: child,
 	}
 }
 
-func (e *expand) CalculateSize(ctx *core.RenderContext) (float64, float64) {
+func (e *expand) CalculateSize(ctx *RenderContext) (float64, float64) {
 	return e.child.CalculateSize(ctx)
 }
 
-func (e *expand) Render(ctx *core.RenderContext) error {
+func (e *expand) Render(ctx *RenderContext) error {
 	return e.child.Render(ctx)
 }

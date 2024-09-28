@@ -1,20 +1,18 @@
 package tpdf
 
-import "tpdf/internal/core"
-
 type column struct {
-	children []core.Widget
+	children []Widget
 	spacing  float64
 }
 
-func Column(children ...core.Widget) *column {
+func Column(children ...Widget) *column {
 	return &column{
 		children: children,
 		spacing:  0,
 	}
 }
 
-func (t *column) CalculateSize(ctx *core.RenderContext) (float64, float64) {
+func (t *column) CalculateSize(ctx *RenderContext) (float64, float64) {
 	width := 0.0
 	height := 0.0
 
@@ -33,7 +31,7 @@ func (t *column) CalculateSize(ctx *core.RenderContext) (float64, float64) {
 	return width, height
 }
 
-func (t *column) Render(ctx *core.RenderContext) error {
+func (t *column) Render(ctx *RenderContext) error {
 	for _, child := range t.children {
 
 		width, height := child.CalculateSize(ctx)
