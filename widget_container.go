@@ -15,11 +15,13 @@ type container struct {
 	paddingBottom   float64
 	borderRadius    borderRadius
 	borderColor     color.Color
+	borderWidth     float64
 }
 
 func Container(child Widget) *container {
 	return &container{
-		child: child,
+		child:       child,
+		borderWidth: 1,
 	}
 }
 
@@ -77,8 +79,9 @@ func (c *container) BorderRadius(borderRadius borderRadius) *container {
 	return c
 }
 
-func (c *container) Bordered(borderColor color.Color) *container {
+func (c *container) Bordered(borderColor color.Color, borderWidth float64) *container {
 	c.borderColor = borderColor
+	c.borderWidth = borderWidth
 	return c
 }
 
@@ -130,13 +133,13 @@ func (c *container) Render(ctx *RenderContext) error {
 		ctx.Writer.RoundedRect(
 			width, height,
 			c.backgroundColor,
-			c.borderRadius, c.borderColor,
+			c.borderRadius, c.borderColor, c.borderWidth,
 		)
 	} else {
 		ctx.Writer.Rect(
 			width, height,
 			c.backgroundColor,
-			c.borderColor,
+			c.borderColor, c.borderWidth,
 		)
 	}
 

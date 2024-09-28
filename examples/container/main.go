@@ -53,14 +53,14 @@ func main() {
 			tpdf.Text("Bordered"),
 		).
 			PaddingAll(4).
-			Bordered(tpdf.HexToRGBA("#00ff00")),
+			Bordered(tpdf.HexToRGBA("#00ff00"), 1),
 
 		tpdf.Container(
-			tpdf.Text("Rounded Bordered"),
+			tpdf.Text("Rounded Bordered with 2px width"),
 		).
 			PaddingAll(4).
 			BorderRadius(tpdf.BorderRadiusAll(4)).
-			Bordered(tpdf.HexToRGBA("#00ff00")),
+			Bordered(tpdf.HexToRGBA("#00ff00"), 2),
 	).WithSpacing(8)
 
 	generator := tpdf.NewGenerator()

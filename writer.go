@@ -446,7 +446,11 @@ func (w *Writer) DefaultFontColor() color.Color {
 	return w.defaultFontColor
 }
 
-func (w *Writer) Rect(width, height float64, backgroundColor color.Color, borderColor color.Color) {
+func (w *Writer) Rect(
+	width, height float64,
+	backgroundColor color.Color,
+	borderColor color.Color, borderWidth float64,
+) {
 	styleStr := ""
 
 	if backgroundColor != nil {
@@ -456,6 +460,7 @@ func (w *Writer) Rect(width, height float64, backgroundColor color.Color, border
 
 	if borderColor != nil {
 		w.setDrawColor(borderColor)
+		w.setLineWidth(borderWidth)
 		styleStr += "D"
 	}
 
@@ -472,6 +477,7 @@ func (w *Writer) RoundedRect(
 	backgroundColor color.Color,
 	borderRadius borderRadius,
 	borderColor color.Color,
+	borderWidth float64,
 ) {
 	styleStr := ""
 
@@ -481,6 +487,7 @@ func (w *Writer) RoundedRect(
 	}
 
 	if borderColor != nil {
+		w.setLineWidth(borderWidth)
 		w.setDrawColor(borderColor)
 		styleStr += "D"
 	}
@@ -514,6 +521,13 @@ func (w *Writer) setDrawColor(color color.Color) {
 	// This method writes data to the pdf, so it should be called only when necessary
 
 	w.Pdf.SetDrawColor(int(r/255), int(g/255), int(b/255))
+}
+
+func (w *Writer) setLineWidth(lineWidth float64) {
+	// FIXME: only call this method when fill color is different
+	// This method writes data to the pdf, so it should be called only when necessary
+
+	w.Pdf.SetLineWidth(lineWidth)
 }
 
 func (w *Writer) setTextColor(color color.Color) {
