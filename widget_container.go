@@ -2,6 +2,7 @@ package tpdf
 
 import (
 	"image/color"
+	"math"
 )
 
 type container struct {
@@ -119,8 +120,17 @@ func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
 		}
 	}
 
-	width += c.paddingLeft + c.paddingRight
-	height += c.paddingTop + c.paddingBottom
+	if width == 0 || width == math.MaxFloat64 {
+		width = ctx.MaxWidth
+	} else {
+		width += c.paddingLeft + c.paddingRight
+	}
+
+	if height == 0 || height == math.MaxFloat64 {
+		height = ctx.MaxHeight
+	} else {
+		height += c.paddingTop + c.paddingBottom
+	}
 
 	return float64(width), float64(height)
 }
