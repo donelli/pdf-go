@@ -379,9 +379,7 @@ func (w *Writer) setFontStyles(
 	underline bool,
 	strikeOut bool,
 ) {
-	// FIXME: only call this method when fontSize is different
-	// This method writes data to the pdf, so it should be called only when necessary
-	w.Pdf.SetFontUnitSize(fontSize)
+	w.SetFontUnitSize(fontSize)
 
 	w.setTextColor(color)
 
@@ -403,7 +401,7 @@ func (w *Writer) setFontStyles(
 		styleString += "S"
 	}
 
-	w.Pdf.SetFontStyle(styleString)
+	w.SetFontStyle(styleString)
 
 	if debug {
 		fmt.Println("[DEBUG] setFontStyles: fontSize:", fontSize, "color:", color, "bold:", bold, "italic:", italic, "underline:", underline, "strikeOut:", strikeOut)
@@ -505,29 +503,53 @@ func (w *Writer) RoundedRect(
 	}
 }
 
+func goColorToRGBA(color color.Color) (r, g, b, a int) {
+	multipliedR, multipliedG, multipliedB, _ := color.RGBA()
+	return int(multipliedR / 255), int(multipliedG / 255), int(multipliedB / 255), 255
+}
+
 func (w *Writer) setFillColor(color color.Color) {
-	r, g, b, _ := color.RGBA()
+	r, g, b, _ := goColorToRGBA(color)
 
-	// FIXME: only call this method when fill color is different
-	// This method writes data to the pdf, so it should be called only when necessary
+	currentR, currentG, currentB := w.Pdf.GetFillColor()
+	if currentR == r && currentG == g && currentB == b {
+		return
+	}
 
-	w.Pdf.SetFillColor(int(r/255), int(g/255), int(b/255))
+	w.Pdf.SetFillColor(r, g, b)
 }
 
 func (w *Writer) setDrawColor(color color.Color) {
-	r, g, b, _ := color.RGBA()
+	r, g, b, _ := goColorToRGBA(color)
 
-	// FIXME: only call this method when fill color is different
-	// This method writes data to the pdf, so it should be called only when necessary
+	currentR, currentG, currentB := w.Pdf.GetDrawColor()
+	if currentR == r && currentG == g && currentB == b {
+		return
+	}
 
-	w.Pdf.SetDrawColor(int(r/255), int(g/255), int(b/255))
+	w.Pdf.SetDrawColor(r, g, b)
 }
 
 func (w *Writer) setLineWidth(lineWidth float64) {
-	// FIXME: only call this method when fill color is different
-	// This method writes data to the pdf, so it should be called only when necessary
+	if w.Pdf.GetLineWidth() == lineWidth {
+		return
+	}
 
 	w.Pdf.SetLineWidth(lineWidth)
+}
+
+func (w *Writer) SetFontUnitSize(fontSize float64) {
+	currentPtSize, _ := w.Pdf.GetFontSize()
+
+	if currentPtSize == fontSize {
+		return
+	}
+
+	w.Pdf.SetFontUnitSize(fontSize)
+}
+
+func (w *Writer) SetFontStyle(style string) {
+	w.Pdf.SetFontStyle(style)
 }
 
 func (w *Writer) setTextColor(color color.Color) {
