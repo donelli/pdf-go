@@ -30,6 +30,9 @@ type Writer struct {
 	footerRenderer   func(page int, totalPagesAlias string) Widget
 	offsetX          float64
 	offsetY          float64
+	currentCapStyle  DividerCapStyle
+	defaultLineColor color.Color
+	defaultCapStyle  DividerCapStyle
 }
 
 func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
@@ -50,7 +53,11 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 		ignorePageBreak:  false,
 		defaultFontSize:  14,
 		defaultFontColor: color.RGBA{0, 0, 0, 255},
+		defaultLineColor: color.RGBA{220, 220, 220, 255},
+		defaultCapStyle:  DividerCapStyleButt,
 	}
+
+	w.SetLineCapStyle(w.currentCapStyle)
 
 	pdf.AliasNbPages(w.getNbAlias())
 
@@ -444,6 +451,36 @@ func (w *Writer) DefaultFontColor() color.Color {
 	return w.defaultFontColor
 }
 
+func (w *Writer) SetDefaultLineColor(color color.Color) {
+	w.defaultLineColor = color
+}
+
+func (w *Writer) Line(
+	width float64,
+	height float64,
+	color color.Color,
+	lineWidth float64,
+	capStyle DividerCapStyle,
+) {
+	drawColor := w.defaultLineColor
+	if color != nil {
+		drawColor = color
+	}
+
+	w.setDrawColor(drawColor)
+
+	w.setLineWidth(lineWidth)
+
+	lineCapStyle := w.defaultCapStyle
+	if capStyle != 0 {
+		lineCapStyle = capStyle
+	}
+
+	w.SetLineCapStyle(lineCapStyle)
+
+	w.Pdf.Line(w.X(), w.Y(), w.X()+width, w.Y()+height)
+}
+
 func (w *Writer) Rect(
 	width, height float64,
 	backgroundColor color.Color,
@@ -554,6 +591,19 @@ func (w *Writer) SetFontUnitSize(fontSize float64) {
 
 func (w *Writer) SetFontStyle(style string) {
 	w.Pdf.SetFontStyle(style)
+}
+
+func (w *Writer) SetLineCapStyle(capStyle DividerCapStyle) {
+	if w.currentCapStyle == capStyle {
+		return
+	}
+
+	w.currentCapStyle = capStyle
+	w.Pdf.SetLineCapStyle(capStyle.fpdfValue())
+}
+
+func (w *Writer) setDefaultCapStyle(capStyle DividerCapStyle) {
+	w.defaultCapStyle = capStyle
 }
 
 func (w *Writer) setTextColor(color color.Color) {

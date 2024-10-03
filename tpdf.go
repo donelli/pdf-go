@@ -9,8 +9,10 @@ type Generator struct {
 	topMargin, rightMargin, bottomMargin, leftMargin float64
 	mainWidget                                       Widget
 	defaultFontSize                                  *float64
-	defaultFontColor                                 *color.Color
+	defaultFontColor                                 color.Color
 	footerHandler                                    func(page int, totalPagesAlias string) Widget
+	defaultLineColor                                 color.Color
+	defaultCapStyle                                  DividerCapStyle
 }
 
 func NewGenerator() *Generator {
@@ -38,7 +40,15 @@ func (g *Generator) SetDefaultFontSize(size float64) {
 }
 
 func (g *Generator) SetDefaultFontColor(color color.Color) {
-	g.defaultFontColor = &color
+	g.defaultFontColor = color
+}
+
+func (g *Generator) SetDefaultLineColor(color color.Color) {
+	g.defaultLineColor = color
+}
+
+func (g *Generator) SetDefaultCapStyle(style DividerCapStyle) {
+	g.defaultCapStyle = style
 }
 
 func (g *Generator) SetFooter(handler func(page int, totalPagesAlias string) Widget) {
@@ -53,13 +63,21 @@ func (g *Generator) GenerateToFile(filename string) error {
 	}
 
 	if g.defaultFontColor != nil {
-		g.writer.SetDefaultFontColor(*g.defaultFontColor)
+		g.writer.SetDefaultFontColor(g.defaultFontColor)
 	}
 
 	if g.footerHandler != nil {
 		g.writer.SetFooter(func(page int, totalPagesAlias string) Widget {
 			return g.footerHandler(page, totalPagesAlias)
 		})
+	}
+
+	if g.defaultLineColor != nil {
+		g.writer.SetDefaultLineColor(g.defaultLineColor)
+	}
+
+	if g.defaultCapStyle != 0 {
+		g.writer.setDefaultCapStyle(g.defaultCapStyle)
 	}
 
 	g.writer.RenderWidget(g.mainWidget)

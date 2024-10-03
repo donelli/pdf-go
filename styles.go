@@ -76,3 +76,15 @@ func (b *borderRadiusEach) BottomLeft() float64 {
 func (b *borderRadiusEach) BottomRight() float64 {
 	return b.bottomRight
 }
+
+type DividerCapStyle int8
+
+const (
+	DividerCapStyleButt DividerCapStyle = iota + 1
+	DividerCapStyleRound
+	DividerCapStyleSquare
+)
+
+func (d DividerCapStyle) fpdfValue() string {
+	return []string{"", "butt", "round", "square"}[d]
+}
