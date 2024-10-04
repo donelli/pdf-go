@@ -20,9 +20,10 @@ func main() {
 		tpdf.Text("ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC ABC AA B C D E F G H").MaxLines(1),
 	).WithSpacing(10)
 
-	generator := tpdf.NewGenerator()
-	generator.SetMargins(8, 8, 8, 8)
-	generator.SetMainWidget(content)
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
 
-	generator.GenerateToFile("text_customizations.pdf")
+	writer.SetMainWidget(content)
+
+	writer.GenerateToFile("text_customizations.pdf")
 }

@@ -81,7 +81,7 @@ func (t *text) calculatedFontSize(ctx *RenderContext) float64 {
 		return *t.fontSize
 	}
 
-	return ctx.DefaultFontSize()
+	return ctx.Theme().DefaultFontSize
 }
 
 func (t *text) calculatedFontColor(ctx *RenderContext) color.Color {
@@ -89,7 +89,7 @@ func (t *text) calculatedFontColor(ctx *RenderContext) color.Color {
 		return *t.color
 	}
 
-	return ctx.DefaultFontColor()
+	return ctx.Theme().DefaultFontColor
 }
 
 func (t *text) CalculateSize(ctx *RenderContext) (float64, float64) {

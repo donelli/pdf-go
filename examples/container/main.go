@@ -63,9 +63,10 @@ func main() {
 			Bordered(tpdf.HexToRGBA("#00ff00"), 2),
 	).WithSpacing(8)
 
-	generator := tpdf.NewGenerator()
-	generator.SetMargins(8, 8, 8, 8)
-	generator.SetMainWidget(content)
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
 
-	generator.GenerateToFile("container.pdf")
+	writer.SetMainWidget(content)
+
+	writer.GenerateToFile("container.pdf")
 }

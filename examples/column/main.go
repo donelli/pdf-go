@@ -62,8 +62,10 @@ func main() {
 		).WithSpacing(12),
 	)
 
-	generator := tpdf.NewGenerator()
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
 
-	generator.SetMainWidget(content)
-	generator.GenerateToFile("column.pdf")
+	writer.SetMainWidget(content)
+
+	writer.GenerateToFile("column.pdf")
 }

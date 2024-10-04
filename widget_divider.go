@@ -9,9 +9,7 @@ type divider struct {
 }
 
 func Divider() *divider {
-	return &divider{
-		lineHeight: 1,
-	}
+	return &divider{}
 }
 
 func (d *divider) LineHeight(lineHeight float64) *divider {
@@ -30,7 +28,22 @@ func (d *divider) CapStyle(capStyle DividerCapStyle) *divider {
 }
 
 func (d *divider) Render(ctx *RenderContext) error {
-	ctx.Writer.Line(ctx.MaxWidth, 0, d.color, d.lineHeight, d.capStyle)
+	color := ctx.Theme().DefaultDividerColor
+	if d.color != nil {
+		color = d.color
+	}
+
+	capStyle := ctx.Theme().DefaultDividerCapStyle
+	if d.capStyle != DividerCapStyleButt {
+		capStyle = d.capStyle
+	}
+
+	lineHeight := ctx.Theme().DefaultDividerLineHeight
+	if d.lineHeight != 0 {
+		lineHeight = d.lineHeight
+	}
+
+	ctx.Writer.Line(ctx.MaxWidth, 0, color, lineHeight, capStyle)
 	return nil
 }
 

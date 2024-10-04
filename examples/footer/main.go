@@ -3,8 +3,6 @@ package main
 import "tpdf"
 
 func main() {
-	generator := tpdf.NewGenerator()
-
 	content := tpdf.Column(
 		tpdf.Text("A").WithFontSize(60),
 		tpdf.Text("B").WithFontSize(60),
@@ -19,7 +17,12 @@ func main() {
 		tpdf.Text("K").WithFontSize(60),
 	).WithSpacing(32)
 
-	generator.SetFooter(func(page int, totalPagesAlias string) tpdf.Widget {
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
+
+	writer.SetMainWidget(content)
+
+	writer.SetFooter(func(page int, totalPagesAlias string) tpdf.Widget {
 
 		if page == 1 {
 			return tpdf.Text("Footer")
@@ -31,6 +34,5 @@ func main() {
 		)
 	})
 
-	generator.SetMainWidget(content)
-	generator.GenerateToFile("footer.pdf")
+	writer.GenerateToFile("footer.pdf")
 }

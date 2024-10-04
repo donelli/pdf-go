@@ -3,8 +3,6 @@ package main
 import "tpdf"
 
 func main() {
-	generator := tpdf.NewGenerator()
-
 	content := tpdf.Column(
 		tpdf.Row(
 			tpdf.Text("Side "),
@@ -32,6 +30,10 @@ func main() {
 		).WithSpacing(8).WithMainAxisSize(tpdf.MainAxisSizeMin),
 	).WithSpacing(4)
 
-	generator.SetMainWidget(content)
-	generator.GenerateToFile("row.pdf")
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
+
+	writer.SetMainWidget(content)
+
+	writer.GenerateToFile("row.pdf")
 }

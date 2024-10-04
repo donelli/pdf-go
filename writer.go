@@ -16,26 +16,27 @@ const debugDrawTextBounds = false
 const debugDrawRectBounds = false
 
 type Writer struct {
-	Pdf              *fpdf.Fpdf
-	internalX        float64
-	internalY        float64
-	footerHeight     float64
-	marginLeft       float64
-	marginRight      float64
-	marginTop        float64
-	marginBottom     float64
-	ignorePageBreak  bool
-	defaultFontSize  float64
-	defaultFontColor color.Color
-	footerRenderer   func(page int, totalPagesAlias string) Widget
-	offsetX          float64
-	offsetY          float64
-	currentCapStyle  DividerCapStyle
-	defaultLineColor color.Color
-	defaultCapStyle  DividerCapStyle
+	Pdf             *fpdf.Fpdf
+	internalX       float64
+	internalY       float64
+	footerHeight    float64
+	marginLeft      float64
+	marginRight     float64
+	marginTop       float64
+	marginBottom    float64
+	ignorePageBreak bool
+	footerRenderer  func(page int, totalPagesAlias string) Widget
+	offsetX         float64
+	offsetY         float64
+	currentCapStyle DividerCapStyle
+	theme           *Theme
+	mainWidget      Widget
 }
 
-func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer {
+func NewWriter(
+	topMargin, rightMargin, bottomMargin, leftMargin float64,
+	theme *Theme,
+) *Writer {
 	pdf := fpdf.New("P", "pt", "A4", "")
 	pdf.SetFont("Arial", "", 14)
 	pdf.SetCellMargin(0)
@@ -43,18 +44,15 @@ func NewWriter(topMargin, rightMargin, bottomMargin, leftMargin float64) *Writer
 	pdf.SetAutoPageBreak(false, 0)
 
 	w := &Writer{
-		Pdf:              pdf,
-		internalX:        leftMargin,
-		internalY:        topMargin,
-		marginLeft:       leftMargin,
-		marginRight:      rightMargin,
-		marginTop:        topMargin,
-		marginBottom:     bottomMargin,
-		ignorePageBreak:  false,
-		defaultFontSize:  14,
-		defaultFontColor: color.RGBA{0, 0, 0, 255},
-		defaultLineColor: color.RGBA{220, 220, 220, 255},
-		defaultCapStyle:  DividerCapStyleButt,
+		Pdf:             pdf,
+		internalX:       leftMargin,
+		internalY:       topMargin,
+		marginLeft:      leftMargin,
+		marginRight:     rightMargin,
+		marginTop:       topMargin,
+		marginBottom:    bottomMargin,
+		ignorePageBreak: false,
+		theme:           theme,
 	}
 
 	w.SetLineCapStyle(w.currentCapStyle)
@@ -179,17 +177,8 @@ func (w *Writer) BreakPage() {
 	w.AddPage()
 }
 
-func (w *Writer) RenderWidget(widget Widget) error {
-	w.AddPage()
-
-	context := w.NewBuildContext()
-
-	err := widget.Render(context)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (w *Writer) SetMainWidget(widget Widget) {
+	w.mainWidget = widget
 }
 
 func (w *Writer) getNbAlias() string {
@@ -235,15 +224,39 @@ func (w *Writer) computeFooterHeight(pageNumber int) {
 	}
 }
 
-func (w *Writer) GeneratePdfToFile(fileName string) error {
+func (w *Writer) generate() error {
+	w.AddPage()
+	context := w.NewBuildContext()
+
+	err := w.mainWidget.Render(context)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (w *Writer) GenerateToFile(fileName string) error {
+	err := w.generate()
+
+	if err != nil {
+		return err
+	}
+
 	return w.Pdf.OutputFileAndClose(fileName)
 }
 
-func (w *Writer) GeneratePdfToBuffer(fileName string) (*bytes.Buffer, error) {
+func (w *Writer) GenerateToBuffer(fileName string) (*bytes.Buffer, error) {
+	err := w.generate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var buffer bytes.Buffer
 	bufferWriter := bufio.NewWriter(&buffer)
 
-	err := w.Pdf.Output(bufferWriter)
+	err = w.Pdf.Output(bufferWriter)
 
 	if err != nil {
 		return nil, err
@@ -435,26 +448,6 @@ func (w *Writer) WillWrite(width, height float64) {
 
 }
 
-func (w *Writer) SetDefaultFontSize(fontSize float64) {
-	w.defaultFontSize = fontSize
-}
-
-func (w *Writer) DefaultFontSize() float64 {
-	return w.defaultFontSize
-}
-
-func (w *Writer) SetDefaultFontColor(color color.Color) {
-	w.defaultFontColor = color
-}
-
-func (w *Writer) DefaultFontColor() color.Color {
-	return w.defaultFontColor
-}
-
-func (w *Writer) SetDefaultLineColor(color color.Color) {
-	w.defaultLineColor = color
-}
-
 func (w *Writer) Line(
 	width float64,
 	height float64,
@@ -462,21 +455,9 @@ func (w *Writer) Line(
 	lineWidth float64,
 	capStyle DividerCapStyle,
 ) {
-	drawColor := w.defaultLineColor
-	if color != nil {
-		drawColor = color
-	}
-
-	w.setDrawColor(drawColor)
-
+	w.setDrawColor(color)
 	w.setLineWidth(lineWidth)
-
-	lineCapStyle := w.defaultCapStyle
-	if capStyle != 0 {
-		lineCapStyle = capStyle
-	}
-
-	w.SetLineCapStyle(lineCapStyle)
+	w.SetLineCapStyle(capStyle)
 
 	w.Pdf.Line(w.X(), w.Y(), w.X()+width, w.Y()+height)
 }
@@ -600,10 +581,6 @@ func (w *Writer) SetLineCapStyle(capStyle DividerCapStyle) {
 
 	w.currentCapStyle = capStyle
 	w.Pdf.SetLineCapStyle(capStyle.fpdfValue())
-}
-
-func (w *Writer) setDefaultCapStyle(capStyle DividerCapStyle) {
-	w.defaultCapStyle = capStyle
 }
 
 func (w *Writer) setTextColor(color color.Color) {

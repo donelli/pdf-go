@@ -1,7 +1,5 @@
 package tpdf
 
-import "image/color"
-
 type RenderContext struct {
 	Writer    *Writer
 	MaxWidth  float64
@@ -24,10 +22,6 @@ func (b *RenderContext) VerticalMargin() float64 {
 	return b.Writer.marginTop + b.Writer.marginBottom
 }
 
-func (b *RenderContext) DefaultFontSize() float64 {
-	return b.Writer.defaultFontSize
-}
-
-func (b *RenderContext) DefaultFontColor() color.Color {
-	return b.Writer.defaultFontColor
+func (b *RenderContext) Theme() *Theme {
+	return b.Writer.theme
 }

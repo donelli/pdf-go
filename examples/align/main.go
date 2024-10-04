@@ -3,8 +3,6 @@ package main
 import "tpdf"
 
 func main() {
-	generator := tpdf.NewGenerator()
-
 	content := tpdf.Column(
 		buildContainer("center", tpdf.AlignmentCenter),
 		buildContainer("bottom center", tpdf.AlignmentBottomCenter),
@@ -17,8 +15,12 @@ func main() {
 		buildContainer("bottom right", tpdf.AlignmentBottomRight),
 	).WithSpacing(6)
 
-	generator.SetMainWidget(content)
-	generator.GenerateToFile("align.pdf")
+	theme := tpdf.NewTheme()
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
+
+	writer.SetMainWidget(content)
+
+	writer.GenerateToFile("align.pdf")
 }
 
 func buildContainer(label string, align tpdf.Alignment) tpdf.Widget {
@@ -27,5 +29,5 @@ func buildContainer(label string, align tpdf.Alignment) tpdf.Widget {
 			align,
 			tpdf.Text(label),
 		),
-	).WithSize(120, 120)
+	).WithSize(120, 120).Bordered(tpdf.HexToRGBA("#000000"), 1)
 }

@@ -30,7 +30,22 @@ func (d *verticalDivider) CapStyle(capStyle DividerCapStyle) *verticalDivider {
 }
 
 func (d *verticalDivider) Render(ctx *RenderContext) error {
-	ctx.Writer.Line(0, ctx.MaxHeight, d.color, d.lineWidth, d.capStyle)
+	color := ctx.Theme().DefaultDividerColor
+	if d.color != nil {
+		color = d.color
+	}
+
+	capStyle := ctx.Theme().DefaultDividerCapStyle
+	if d.capStyle != DividerCapStyleButt {
+		capStyle = d.capStyle
+	}
+
+	lineWidth := ctx.Theme().DefaultDividerLineHeight
+	if d.lineWidth != 0 {
+		lineWidth = d.lineWidth
+	}
+
+	ctx.Writer.Line(0, ctx.MaxHeight, color, lineWidth, capStyle)
 	return nil
 }
 

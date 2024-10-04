@@ -24,12 +24,12 @@ func main() {
 		).WithHeight(100),
 	).WithSpacing(8)
 
-	generator := tpdf.NewGenerator()
-	generator.SetMargins(8, 8, 8, 8)
-	generator.SetMainWidget(content)
+	theme := tpdf.NewTheme()
+	theme.DefaultDividerColor = tpdf.HexToRGBA("#dddddd")
+	theme.DefaultDividerCapStyle = tpdf.DividerCapStyleRound
+	writer := tpdf.NewWriter(8, 8, 8, 8, theme)
 
-	generator.SetDefaultLineColor(tpdf.HexToRGBA("#dddddd"))
-	generator.SetDefaultCapStyle(tpdf.DividerCapStyleRound)
+	writer.SetMainWidget(content)
 
-	generator.GenerateToFile("divider.pdf")
+	writer.GenerateToFile("divider.pdf")
 }
