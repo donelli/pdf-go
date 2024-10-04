@@ -124,6 +124,9 @@ func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
 
 	childWidth, childHeight := 0.0, 0.0
 	if c.child != nil {
+		updatedCtx.MaxHeight -= c.paddingTop + c.paddingBottom
+		updatedCtx.MaxWidth -= c.paddingLeft + c.paddingRight
+
 		childWidth, childHeight = c.child.CalculateSize(updatedCtx)
 	}
 
