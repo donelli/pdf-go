@@ -86,53 +86,48 @@ func (c *container) Bordered(borderColor color.Color, borderWidth float64) *cont
 	return c
 }
 
-func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
-	width := 0.0
+func (c *container) calculateWidth(ctx *RenderContext, childWidth float64) float64 {
 	if c.width != nil {
-		width = *c.width
+		if *c.width == math.MaxFloat64 {
+			return ctx.MaxWidth
+		}
+
+		return *c.width
 	}
 
-	height := 0.0
+	return childWidth + c.paddingLeft + c.paddingRight
+}
+
+func (c *container) calculateHeight(ctx *RenderContext, childHeight float64) float64 {
 	if c.height != nil {
-		height = *c.height
-	}
 
-	if c.child != nil && (width == 0 || height == 0) {
-
-		updatedCtx := ctx.Copy()
-
-		if width != 0 {
-			updatedCtx.MaxWidth = width
+		if *c.height == math.MaxFloat64 {
+			return ctx.MaxHeight
 		}
 
-		if height != 0 {
-			updatedCtx.MaxHeight = height
-		}
-
-		childWidth, childHeight := c.child.CalculateSize(updatedCtx)
-
-		if width == 0 {
-			width = childWidth
-		}
-
-		if height == 0 {
-			height = childHeight
-		}
+		return *c.height
 	}
 
-	if width == 0 || width == math.MaxFloat64 {
-		width = ctx.MaxWidth
-	} else {
-		width += c.paddingLeft + c.paddingRight
+	return childHeight + c.paddingTop + c.paddingBottom
+}
+
+func (c *container) CalculateSize(ctx *RenderContext) (float64, float64) {
+	updatedCtx := ctx.Copy()
+
+	if c.width != nil && *c.width != 0 {
+		updatedCtx.MaxWidth = *c.width
 	}
 
-	if height == 0 || height == math.MaxFloat64 {
-		height = ctx.MaxHeight
-	} else {
-		height += c.paddingTop + c.paddingBottom
+	if c.height != nil && *c.height != 0 {
+		updatedCtx.MaxHeight = *c.height
 	}
 
-	return float64(width), float64(height)
+	childWidth, childHeight := 0.0, 0.0
+	if c.child != nil {
+		childWidth, childHeight = c.child.CalculateSize(updatedCtx)
+	}
+
+	return c.calculateWidth(ctx, childWidth), c.calculateHeight(ctx, childHeight)
 }
 
 func (c *container) Render(ctx *RenderContext) error {

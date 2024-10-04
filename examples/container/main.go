@@ -6,6 +6,7 @@ import (
 
 func main() {
 	content := tpdf.Column(
+		tpdf.Text("Two containers with fixed width and height and no child"),
 		tpdf.Row(
 			tpdf.Container(nil).
 				WithSize(100, 100).
@@ -18,23 +19,35 @@ func main() {
 			WithMainAxisSize(tpdf.MainAxisSizeMin).
 			WithSpacing(8),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with fixed width and height and no child"),
 		tpdf.Container(nil).
 			WithSize(100, 20).
 			WithBackgroundColor(tpdf.HexToRGBA("#00ff00")),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with padding, child and no fixed size"),
 		tpdf.Container(
-			tpdf.Text("Container with child and padding"),
+			tpdf.Text("Child"),
 		).
 			WithBackgroundColor(tpdf.HexToRGBA("#bbffbb")).
 			PaddingAll(8),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with padding, child, fixed width and no height"),
 		tpdf.Container(
-			tpdf.Text("Container with child and padding and width"),
+			tpdf.Text("Child"),
 		).
 			WithWidth(100).
 			WithBackgroundColor(tpdf.HexToRGBA("#dddddd")).
 			PaddingAll(8),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with fixed size (40x40) and border radius all 4"),
 		tpdf.Container(
 			tpdf.Text("A"),
 		).
@@ -42,6 +55,9 @@ func main() {
 			WithBackgroundColor(tpdf.HexToRGBA("#dddddd")).
 			BorderRadius(tpdf.BorderRadiusAll(4)),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with fixed size (40x40) and border radius all 4"),
 		tpdf.Container(
 			tpdf.Text("Border radius in specific corders"),
 		).
@@ -49,14 +65,20 @@ func main() {
 			BorderRadius(tpdf.BorderRadiusEach(4, 0, 0, 4)).
 			PaddingAll(2),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with no fixed size, no border radius and green border with 1 px size"),
 		tpdf.Container(
-			tpdf.Text("Bordered"),
+			tpdf.Text("Child"),
 		).
 			PaddingAll(4).
 			Bordered(tpdf.HexToRGBA("#00ff00"), 1),
 
+		tpdf.Divider(),
+
+		tpdf.Text("Container with no fixed size, with border radius and green border with 2 px size"),
 		tpdf.Container(
-			tpdf.Text("Rounded Bordered with 2px width"),
+			tpdf.Text("Child"),
 		).
 			PaddingAll(4).
 			BorderRadius(tpdf.BorderRadiusAll(4)).
