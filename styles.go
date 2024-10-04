@@ -88,3 +88,64 @@ const (
 func (d DividerCapStyle) fpdfValue() string {
 	return []string{"", "butt", "round", "square"}[d]
 }
+
+type PaddingValue interface {
+	Left() float64
+	Top() float64
+	Right() float64
+	Bottom() float64
+}
+
+type paddingAll float64
+
+func PaddingAll(padding float64) *paddingAll {
+	return (*paddingAll)(&padding)
+}
+
+func (p paddingAll) Left() float64 {
+	return float64(p)
+}
+
+func (p paddingAll) Top() float64 {
+	return float64(p)
+}
+
+func (p paddingAll) Right() float64 {
+	return float64(p)
+}
+
+func (p paddingAll) Bottom() float64 {
+	return float64(p)
+}
+
+type paddingEach struct {
+	topLeft     float64
+	topRight    float64
+	bottomLeft  float64
+	bottomRight float64
+}
+
+func PaddingEach(topLeft, topRight, bottomLeft, bottomRight float64) *paddingEach {
+	return &paddingEach{
+		topLeft:     topLeft,
+		topRight:    topRight,
+		bottomLeft:  bottomLeft,
+		bottomRight: bottomRight,
+	}
+}
+
+func (p *paddingEach) Left() float64 {
+	return p.topLeft
+}
+
+func (p *paddingEach) Top() float64 {
+	return p.topRight
+}
+
+func (p *paddingEach) Right() float64 {
+	return p.bottomLeft
+}
+
+func (p *paddingEach) Bottom() float64 {
+	return p.bottomRight
+}
