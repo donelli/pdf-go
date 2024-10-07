@@ -38,6 +38,7 @@ func (t *column) Render(ctx *RenderContext) error {
 		ctx.Writer.WillWrite(width, height)
 
 		x, y := ctx.Writer.X(), ctx.Writer.Y()
+		initialPageNumber := ctx.Writer.PageNumber()
 
 		err := child.Render(ctx)
 
@@ -45,8 +46,11 @@ func (t *column) Render(ctx *RenderContext) error {
 			return err
 		}
 
+		if ctx.Writer.PageNumber() == initialPageNumber {
+			ctx.Writer.SetY(y + height + t.spacing)
+		}
+
 		ctx.Writer.SetX(x)
-		ctx.Writer.SetY(y + height + t.spacing)
 	}
 
 	return nil

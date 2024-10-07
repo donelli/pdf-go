@@ -21,4 +21,5 @@ tpdf is a layout engine for building PDFs in golang.
 - [ ] Ordered and unordered list widgets
 - [ ] Page header
 - [ ] Basic HTML support?
+- [ ] Force new page widget
 

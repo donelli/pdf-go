@@ -598,3 +598,7 @@ func (w *Writer) SubtractOffsets(offsetX, offsetY float64) {
 	w.offsetX -= offsetX
 	w.offsetY -= offsetY
 }
+
+func (w *Writer) PageNumber() int {
+	return w.Pdf.PageNo()
+}
