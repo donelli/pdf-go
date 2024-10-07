@@ -31,6 +31,7 @@ type Writer struct {
 	currentCapStyle DividerCapStyle
 	theme           *Theme
 	mainWidget      Widget
+	metadata        *Metadata
 }
 
 func NewWriter(
@@ -224,7 +225,15 @@ func (w *Writer) computeFooterHeight(pageNumber int) {
 	}
 }
 
+func (w *Writer) SetMetadata(metadata Metadata) {
+	w.metadata = &metadata
+}
+
 func (w *Writer) generate() error {
+	if w.metadata != nil {
+		w.metadata.addMetadataToPdf(w.Pdf)
+	}
+
 	w.AddPage()
 	context := w.NewBuildContext()
 

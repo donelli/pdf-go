@@ -13,7 +13,7 @@ tpdf is a layout engine for building PDFs in golang.
 - [ ] Image widget
 - [ ] Custom fonts
 - [ ] Custom PDF sizes / orientation
-- [ ] Metadata (name, author, description, ...)
+- [x] Metadata (name, author, description, ...)
 - [ ] Custom units for sizes (`pt, px, %, ...`)
 - [ ] Alpha channel on text
 - [x] Divider and vertical divider widgets
@@ -21,5 +21,5 @@ tpdf is a layout engine for building PDFs in golang.
 - [ ] Ordered and unordered list widgets
 - [ ] Page header
 - [ ] Basic HTML support?
-- [ ] Force new page widget
+- [x] Force new page widget
 
